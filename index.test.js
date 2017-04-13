@@ -1,0 +1,218 @@
+'use strict';
+
+const Joi = require('joi');
+const sinon = require('sinon');
+const supertest = require('supertest');
+const expect = require('chai').expect;
+
+describe('express joi', function () {
+
+  var schema, mod;
+
+  function getRequester (middleware) {
+    const app = require('express')();
+
+    // POST/PUT need body parser
+    app.use(require('body-parser').json());
+
+    // Must apply params middleware inline with the route to match param names
+    app.get('/params-check/:key', middleware, (req, res) => {
+      expect(req.params).to.exist;
+      expect(req.originalParams).to.exist;
+
+      expect(req.params.key).to.be.a('number');
+      expect(req.originalParams.key).to.be.a('string');
+
+      res.end('ok');
+    });
+
+    // Apply validation middleware supplied
+    app.use(middleware);
+
+    // Configure some dummy routes
+    app.get('/headers-check', (req, res) => {
+      expect(req.headers).to.exist;
+      expect(req.originalHeaders).to.exist;
+
+      expect(req.headers.key).to.be.a('number');
+      expect(req.originalHeaders.key).to.be.a('string');
+
+      res.end('ok');
+    });
+
+    app.get('/query-check', (req, res) => {
+      expect(req.query).to.exist;
+      expect(req.originalQuery).to.exist;
+
+      expect(req.query.key).to.be.a('number');
+      expect(req.originalQuery.key).to.be.a('string');
+
+      res.end('ok');
+    });
+
+    app.post('/body-check', (req, res) => {
+      expect(req.body).to.exist;
+      expect(req.originalBody).to.exist;
+
+      expect(req.body.key).to.be.a('number');
+      expect(req.originalBody.key).to.be.a('string');
+
+      res.end('ok');
+    });
+
+    return supertest(app);
+  }
+
+  beforeEach(function () {
+    require('clear-require').all();
+
+    schema = Joi.object({
+      key: Joi.number().integer().min(1).max(10).required()
+    });
+
+    mod = require('./index')();
+  });
+
+  describe('#headers', function () {
+    it('should return a 200 since our request is valid', function (done) {
+      const mw = mod.headers(schema);
+
+      getRequester(mw).get('/headers-check')
+        .expect(200)
+        .set('key', '10')
+        .end(done);
+    });
+
+    it('should return a 400 since our request is invalid', function (done) {
+      const mw = mod.headers(schema);
+
+      getRequester(mw).get('/headers-check')
+        .expect(400)
+        .set('key', '150')
+        .end(function (err, res) {
+          expect(res.text).to.contain(
+            '"key" must be less than or equal to 10'
+          );
+          done();
+        });
+    });
+  });
+
+  describe('#query', function () {
+    it('should return a 200 since our querystring is valid', function (done) {
+      const mw = mod.query(schema);
+
+      getRequester(mw).get('/query-check?key=5')
+        .expect(200)
+        .end(done);
+    });
+
+    it('should return a 400 since our querystring is invalid', function (done) {
+      const mw = mod.query(schema);
+
+      getRequester(mw).get('/query-check')
+        .expect(400)
+        .end(function (err, res) {
+          expect(res.text).to.contain('"key" is required');
+          done();
+        });
+    });
+  });
+
+  describe('#body', function () {
+    it('should return a 200 since our body is valid', function (done) {
+      const mw = mod.body(schema);
+
+      getRequester(mw).post('/body-check')
+        .send({
+          key: '1'
+        })
+        .expect(200)
+        .end(done);
+    });
+
+    it('should return a 400 since our body is invalid', function (done) {
+      const mw = mod.body(schema);
+
+      getRequester(mw).post('/body-check')
+        .expect(400)
+        .end(function (err, res) {
+          expect(res.text).to.contain('"key" is required');
+          done();
+        });
+    });
+  });
+
+  describe('#params', function () {
+    it('should return a 200 since our request param is valid', function (done) {
+      const mw = mod.params(schema);
+
+      getRequester(mw).get('/params-check/3')
+        .expect(200)
+        .end(done);
+    });
+
+    it('should return a 400 since our param is invalid', function (done) {
+      const mw = mod.params(schema);
+
+      getRequester(mw).get('/params-check/not-a-number')
+        .expect(400)
+        .end(function (err, res) {
+          expect(res.text).to.contain('"key" must be a number');
+          done();
+        });
+    });
+  });
+
+  describe('optional configs', function () {
+    it('should call next on error via config.passError', function (done) {
+      const mod = require('./index.js')({
+        passError: true
+      });
+      const mw = mod.query(Joi.object({
+        key: Joi.string().required().valid('only-this-is-valid')
+      }));
+
+      mw({query: {key: 'not valid'}}, {}, () => {
+        done();
+      });
+    });
+
+    it('should use supplied config.joi and config.statusCode', function (done) {
+      const errStr = 'a fake joi error';
+      const statusCode = 403;
+
+      const joiStub = {
+        validate: sinon.stub().returns({
+          error: errStr
+        })
+      };
+
+      const reqStub = {
+        query: {}
+      };
+
+      const resStub = {
+        end: (str) => {
+          expect(joiStub.validate.called).to.be.true;
+          expect(resStub.status.calledWith(statusCode)).to.be.true;
+          expect(str).to.equal(errStr);
+          done();
+        }
+      };
+      resStub.status = sinon.stub().returns(resStub);
+
+      const mod = require('./index.js')({
+        joi: joiStub,
+        statusCode: statusCode
+      });
+
+      const mw = mod.query(Joi.object({}));
+
+      mw(reqStub, resStub, () => {
+        done(new Error('next should not be called'));
+      });
+    });
+  });
+
+});
