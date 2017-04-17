@@ -4,12 +4,13 @@
   "description": "validate express application inputs and parameters using joi",
   "main": "index.js",
   "scripts": {
-    "unit": "mocha index.test.js",
+    "unit": "mocha *.test.js",
     "test": "npm run cover && nyc check-coverage --statements 100 --lines 100 --functions 100 --branches 100",
     "cover": "nyc --reporter=lcov --produce-source-map=true npm run unit",
     "example": "nodemon example/server.js",
     "coveralls": "npm run cover && cat coverage/lcov.info | coveralls"
   },
+  "files": ["index.js"],
   "keywords": [
     "joi",
     "express",
@@ -42,5 +43,8 @@
   },
   "peerDependencies": {
     "joi": "*"
+  },
+  "engines": {
+    "node": ">=4.0.0"
   }
 }

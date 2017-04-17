@@ -173,18 +173,25 @@ describe('express joi', function () {
         key: Joi.string().required().valid('only-this-is-valid')
       }));
 
-      mw({query: {key: 'not valid'}}, {}, () => {
+      mw({query: {key: 'not valid'}}, {}, (err) => {
+        expect(err.type).to.equal('query');
+        expect(err.error.isJoi).to.be.true;
+        expect(err.value).to.be.an('object');
         done();
       });
     });
 
     it('should use supplied config.joi and config.statusCode', function (done) {
-      const errStr = 'a fake joi error';
+      const errStr = '"id" is required';
       const statusCode = 403;
 
       const joiStub = {
         validate: sinon.stub().returns({
-          error: errStr
+          error: {
+            details: [{
+              message: errStr
+            }]
+          }
         })
       };
 
@@ -196,7 +203,7 @@ describe('express joi', function () {
         end: (str) => {
           expect(joiStub.validate.called).to.be.true;
           expect(resStub.status.calledWith(statusCode)).to.be.true;
-          expect(str).to.equal(errStr);
+          expect(str).to.equal(`Error validating request query. ${errStr}.`);
           done();
         }
       };

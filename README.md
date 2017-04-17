@@ -3,12 +3,18 @@
 ![TravisCI](https://travis-ci.org/evanshortiss/express-joi-validation.svg) [![npm version](https://badge.fury.io/js/express-joi-validation.svg)](https://badge.fury.io/js/express-joi-validation) [![Coverage Status](https://coveralls.io/repos/github/evanshortiss/express-joi-validation/badge.svg?branch=master)](https://coveralls.io/github/evanshortiss/express-joi-validation?branch=master)
 
 A middleware for validating express inputs using Joi schemas. Fills some of the
-voids I found that other Joi middleware miss:
+voids I found that other Joi middleware miss such as:
 
-* Allows the developers to specify the order in which request inputs are validated in a clear manner.
-* Replaces the `req.body` and others with converted Joi values. The same applies for headers, query, and params, but...
-* Retains the original `req.body` inside a new property named `req.originalBody`. The same applies for headers, query, and params using the `original` prefix.
-* Passes sensible default options to Joi for headers, params, query, and body. These are detailed below.
+* Allow the developers to easily specify the order in which request inputs are
+validated.
+* Replaces the `req.body` and others with converted Joi values. The same applies
+for headers, query, and params, but...
+* Retains the original `req.body` inside a new property named `req.originalBody`
+. The same applies for headers, query, and params using the `original` prefix,
+e.g `req.originalQuery` will contain the `req.query` as it looked *before*
+validation.
+* Passes sensible default options to Joi for headers, params, query, and body.
+These are detailed below.
 * Uses `peerDependencies` to get a Joi instance of your choosing instead of
 using a fixed version.
 
@@ -16,10 +22,20 @@ using a fixed version.
 
 ## Install
 
+You need to install `joi` along with this module for it to work since it relies
+on it as a peer dependency. Currently this module has only been tested with joi
+version 10.0 and higher.
+
 ```
-# remember, you need to install joi too
+# we install our middleware AND joi since it's required by our middleware
 npm i express-joi-validation joi --save
 ```
+
+
+## Example Code
+
+An example application can be found in the [example/](https://github.com/evanshortiss/express-joi-validation/tree/master/example)
+folder of this repository.
 
 
 ## Usage
@@ -37,7 +53,12 @@ const querySchema = Joi.object({
   to: Joi.date().iso().min(Joi.ref('from')).required()
 });
 
-app.get('/orders', validator.query(querySchema), (req, res, next) => {
+// Allow unknown fields in the query. This is not allowed by default
+const joiOpts = {
+  allowUnknown: true
+};
+
+app.get('/orders', validator.query(querySchema, {joi: joiOpts}), (req, res, next) => {
   console.log(
     `Compare the incoming query ${JSON.stringify(req.originalQuery)} vs. the sanatised query ${JSON.stringify(req.query)}`
   );
@@ -53,7 +74,8 @@ app.get('/orders', validator.query(querySchema), (req, res, next) => {
 
 ### Joi Versioning
 This module uses `peerDependencies` for the Joi version being used. This means
-whatever Joi version is in the `dependencies` of your `package.json` will be used by this module.
+whatever Joi version is in the `dependencies` of your `package.json` will be
+used by this module.
 
 ### Validation Ordering
 If you'd like to validate different request inputs in differing orders it's
@@ -125,6 +147,43 @@ The following sensible defaults are applied if you pass none:
 * abortEarly: false
 
 
+## Custom Express Error handler
+
+If you don't like the default error format returned by this module you can
+override it like so:
+
+```js
+const validator = require('express-joi-validation')({
+  passError: true // NOTE: this tells the module to pass the error along for you
+});
+
+const app = require('express')();
+const orders = require('lib/orders');
+
+app.get('/orders', validator.query(require('./query-schema')), (req, res, next) => {
+  // if we're in here then the query was valid!
+  orders.getForQuery(req.query)
+    .then((listOfOrders) => res.json(listOfOrders))
+    .catch(next);
+});
+
+// After your routes add a standard express error handler. This will be passed the Joi
+// error, plus an extra "type" field so we can tell what type of validation failed
+app.use((err, req, res, next) => {
+  if (err.error.isJoi) {
+    // we had a joi error, let's return a custom 400 json response
+    res.status(400).json({
+      type: err.type, // will be "query" here, but could be "headers", "body", or "params"
+      message: err.error.toString()
+    });
+  } else {
+    // pass on to another error handler
+    next(err);
+  }
+});
+```
+
+
 ## API
 
 ### module(config)
@@ -169,7 +228,6 @@ The `instance.params` middleware is a little different to the others. It _must_
 be attached directly to the route it is related to. Here's a sample:
 
 ```js
-
 const schema = Joi.object({
   id: Joi.number().integer().required()
 });
@@ -184,5 +242,4 @@ app.get('/orders/:id', (req, res, next) => {
 app.get('/orders/:id', validator.params(schema), (req, res, next) => {
   // This WILL have a validated "id"
 })
-
 ```
