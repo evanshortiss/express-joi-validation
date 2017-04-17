@@ -1,5 +1,7 @@
 'use strict';
 
+process.title = 'express-joi-validation';
+
 const port = 8080;
 
 const app = require('express')();
