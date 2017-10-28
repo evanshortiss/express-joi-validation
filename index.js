@@ -10,6 +10,7 @@ const containers = {
       abortEarly: false
     }
   },
+  // For use with body-parser
   body: {
     storageProperty: 'originalBody',
     joi: {
@@ -27,8 +28,18 @@ const containers = {
       abortEarly: false
     }
   },
+  // URL params e.g "/users/:userId"
   params: {
     storageProperty: 'originalParams',
+    joi: {
+      convert: true,
+      allowUnknown: false,
+      abortEarly: false
+    }
+  },
+  // For use with express-formidable or similar POST body parser for forms
+  fields: {
+    storageProperty: 'originalFields',
     joi: {
       convert: true,
       allowUnknown: false,

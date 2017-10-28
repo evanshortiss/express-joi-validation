@@ -12,9 +12,6 @@ describe('express joi', function () {
   function getRequester (middleware) {
     const app = require('express')();
 
-    // POST/PUT need body parser
-    app.use(require('body-parser').json());
-
     // Must apply params middleware inline with the route to match param names
     app.get('/params-check/:key', middleware, (req, res) => {
       expect(req.params).to.exist;
@@ -26,11 +23,8 @@ describe('express joi', function () {
       res.end('ok');
     });
 
-    // Apply validation middleware supplied
-    app.use(middleware);
-
     // Configure some dummy routes
-    app.get('/headers-check', (req, res) => {
+    app.get('/headers-check', middleware, (req, res) => {
       expect(req.headers).to.exist;
       expect(req.originalHeaders).to.exist;
 
@@ -40,7 +34,7 @@ describe('express joi', function () {
       res.end('ok');
     });
 
-    app.get('/query-check', (req, res) => {
+    app.get('/query-check', middleware, (req, res) => {
       expect(req.query).to.exist;
       expect(req.originalQuery).to.exist;
 
@@ -50,12 +44,22 @@ describe('express joi', function () {
       res.end('ok');
     });
 
-    app.post('/body-check', (req, res) => {
+    app.post('/body-check', require('body-parser').json(), middleware, (req, res) => {
       expect(req.body).to.exist;
       expect(req.originalBody).to.exist;
 
       expect(req.body.key).to.be.a('number');
       expect(req.originalBody.key).to.be.a('string');
+
+      res.end('ok');
+    });
+
+    app.post('/fields-check', require('express-formidable')(), middleware, (req, res) => {
+      expect(req.fields).to.exist;
+      expect(req.originalFields).to.exist;
+
+      expect(req.fields.key).to.be.a('number');
+      expect(req.originalFields.key).to.be.a('string');
 
       res.end('ok');
     });
@@ -135,6 +139,28 @@ describe('express joi', function () {
       const mw = mod.body(schema);
 
       getRequester(mw).post('/body-check')
+        .expect(400)
+        .end(function (err, res) {
+          expect(res.text).to.contain('"key" is required');
+          done();
+        });
+    });
+  });
+
+  describe('#fields', function () {
+    it('should return a 200 since our fields are valid', function (done) {
+      const mw = mod.fields(schema);
+
+      getRequester(mw).post('/fields-check')
+        .field('key', '1')
+        .expect(200)
+        .end(done);
+    });
+
+    it('should return a 400 since our body is invalid', function (done) {
+      const mw = mod.fields(schema);
+
+      getRequester(mw).post('/fields-check')
         .expect(400)
         .end(function (err, res) {
           expect(res.text).to.contain('"key" is required');
