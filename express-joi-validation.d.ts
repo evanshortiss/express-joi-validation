@@ -32,3 +32,7 @@ interface ExpressJoiInstance {
 }
 
 declare function validation (cfg? : ExpressJoiConfig): ExpressJoiInstance
+
+declare namespace validation {}
+
+export = validation

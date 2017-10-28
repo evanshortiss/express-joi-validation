@@ -1,10 +1,10 @@
 'use strict'
 
-const port = 8080
+const port = 3030
 
 import * as express from 'express'
 import * as Joi from 'joi'
-import * as validation from '../../index'
+import * as validation from '../../express-joi-validation'
 
 const app = express()
 const validator = validation()
@@ -16,9 +16,9 @@ const headerSchema = Joi.object({
 
 app.use(validator.headers(headerSchema))
 
-app.use('/users', require('./router'))
+app.get('/ping', (req, res) => res.end('pong'))
 
-app.listen(port, (err) => {
+app.listen(port, (err: any) => {
   if (err) {
     throw err
   }
