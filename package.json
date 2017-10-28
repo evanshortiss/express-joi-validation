@@ -12,6 +12,7 @@
     "example-ts": "tsc example/typescript/server.ts && node example/typescript/server.js",
     "coveralls": "npm run cover && cat coverage/lcov.info | coveralls"
   },
+  "typings": "express-joi-validation.d.ts",
   "files": [
     "express-joi-validation.js",
     "express-joi-validation.d.ts"
