@@ -1,0 +1,9 @@
+#!/bin/bash
+x=1
+
+while [ $x -le 10 ]
+do
+  ab -n 1000 -c 100 -q http://127.0.0.1:8080/users?name=dean | grep -i "Requests per second"
+  x=$(( $x + 1 ))
+  sleep 5
+done
