@@ -2,7 +2,7 @@
   "name": "express-joi-validation",
   "version": "0.1.0",
   "description": "validate express application inputs and parameters using joi",
-  "main": "index.js",
+  "main": "express-joi-validation.js",
   "scripts": {
     "unit": "mocha *.test.js",
     "ts-test": "tsc express-joi-validation.d.ts --target es5 --module commonjs --noEmit",

@@ -74,7 +74,7 @@ describe('express joi', function () {
       key: Joi.number().integer().min(1).max(10).required()
     });
 
-    mod = require('./index')();
+    mod = require('./express-joi-validation')();
   });
 
   describe('#headers', function () {
