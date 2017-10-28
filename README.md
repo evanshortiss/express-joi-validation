@@ -1,6 +1,9 @@
 # express-joi-validation
 
-![TravisCI](https://travis-ci.org/evanshortiss/express-joi-validation.svg) [![npm version](https://badge.fury.io/js/express-joi-validation.svg)](https://badge.fury.io/js/express-joi-validation) [![Coverage Status](https://coveralls.io/repos/github/evanshortiss/express-joi-validation/badge.svg?branch=master)](https://coveralls.io/github/evanshortiss/express-joi-validation?branch=master)
+![TravisCI](https://travis-ci.org/evanshortiss/express-joi-validation.svg)
+[![npm version](https://badge.fury.io/js/express-joi-validation.svg)](https://badge.fury.io/js/express-joi-validation)
+[![Coverage Status](https://coveralls.io/repos/github/evanshortiss/express-joi-validation/badge.svg?branch=master)](https://coveralls.io/github/evanshortiss/express-joi-validation?branch=master)
+[![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/)
 
 A middleware for validating express inputs using Joi schemas. Fills some of the
 voids I found that other Joi middleware miss such as:
@@ -41,32 +44,22 @@ folder of this repository.
 ## Usage
 
 ```js
-const Joi = require('joi');
-const validator = require('express-joi-validation')({});
-
-const app = require('express')();
-const orders = require('lib/orders');
+const Joi = require('joi')
+const app = require('express')()
+const validator = require('express-joi-validation')({})
 
 const querySchema = Joi.object({
-  type: Joi.string().required().valid('food', 'drinks', 'entertainment'),
-  from: Joi.date().iso().required(),
-  to: Joi.date().iso().min(Joi.ref('from')).required()
-});
-
-// Allow unknown fields in the query. This is not allowed by default
-const joiOpts = {
-  allowUnknown: true
-};
+  type: Joi.string().required().valid('food', 'drinks', 'entertainment')
+})
 
 app.get('/orders', validator.query(querySchema, {joi: joiOpts}), (req, res, next) => {
   console.log(
-    `Compare the incoming query ${JSON.stringify(req.originalQuery)} vs. the sanatised query ${JSON.stringify(req.query)}`
-  );
+    `original query ${JSON.stringify(req.originalQuery)} vs. the sanatised query ${JSON.stringify(req.query)}`
+  )
+  
   // if we're in here then the query was valid!
-  orders.getForQuery(req.query)
-    .then((listOfOrders) => res.json(listOfOrders))
-    .catch(next);
-});
+  res.end(`you placed an order of type ${req.query.type}`)
+})
 ```
 
 
@@ -142,6 +135,11 @@ The following sensible defaults are applied if you pass none:
 * abortEarly: false
 
 #### Route Params
+* convert: true
+* allowUnknown: false
+* abortEarly: false
+
+#### Fields (with express-formidable)
 * convert: true
 * allowUnknown: false
 * abortEarly: false
@@ -223,6 +221,11 @@ instance was created.
 Create a middleware instance that will validate the params for an incoming
 request. Can be passed `options` that override the options passed when the
 instance was created.
+
+#### instance.fields(schema, [options])
+Create a middleware instance that will validate the fields for an incoming
+request. This is designed for use with `express-formidable`. Can be passed
+`options` that override the options passed when the instance was created.
 
 The `instance.params` middleware is a little different to the others. It _must_
 be attached directly to the route it is related to. Here's a sample:
