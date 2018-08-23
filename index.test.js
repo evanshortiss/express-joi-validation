@@ -64,6 +64,11 @@ describe('express joi', function () {
       res.end('ok');
     });
 
+    app.get('/response/:key', middleware, (req, res) => {
+      const { key } = req.params
+      res.sendValidJson({ key: +key || 'none' })
+    })
+
     return supertest(app);
   }
 
@@ -189,6 +194,19 @@ describe('express joi', function () {
         });
     });
   });
+
+  describe('#response', function () {
+    it('should return a 500 when the key is not right', function () {
+      const middleware = mod.response(schema);
+      return getRequester(middleware)
+        .get('/response/one')
+        .expect(500)
+        .expect(function (res) {
+          expect(res.text).to.contain('"key" must be a number');
+          done();
+        })
+    })
+  })
 
   describe('optional configs', function () {
     it('should call next on error via config.passError', function (done) {
