@@ -66,7 +66,13 @@ describe('express joi', function () {
 
     app.get('/response/:key', middleware, (req, res) => {
       const { key } = req.params
-      res.sendValidJson({ key: +key || 'none' })
+      res.json({ key: +key || 'none' })
+    }, (err, req, res, next) => {
+      const possibles = { one: 1 }
+      const value = possibles[req.params.key]
+      res.json({
+        key: value
+      })
     })
 
     return supertest(app);
@@ -196,15 +202,36 @@ describe('express joi', function () {
   });
 
   describe('#response', function () {
-    it('should return a 500 when the key is not right', function () {
+    it('should return a 500 when the key is not right for regular', function () {
       const middleware = mod.response(schema);
       return getRequester(middleware)
         .get('/response/one')
         .expect(500)
-        .expect(function (res) {
-          expect(res.text).to.contain('"key" must be a number');
-          done();
-        })
+    })
+
+    it('should return a 200 when the key is correct for regular', function () {
+      const middleware = mod.response(schema);
+      return getRequester(middleware)
+        .get('/response/1')
+        .expect(200)
+    })
+
+    it('should pass an error to subsequent handler if it is asked', function () {
+      const middleware = mod.response(schema, {
+        passError: true
+      })
+      return getRequester(middleware)
+        .get('/response/one')
+        .expect(200)
+    })
+
+    it('should return an alternative status for failure', function () {
+      const middleware = mod.response(schema, {
+        statusCode: 422
+      })
+      return getRequester(middleware)
+        .get(`/response/one`)
+        .expect(422)
     })
   })
 

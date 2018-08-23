@@ -49,7 +49,7 @@ const containers = {
 };
 
 function buildErrorString (err, container) {
-  let ret = `Error validating request ${container}.`;
+  let ret = `Error validating ${container}.`;
   let details = err.error.details;
 
   for (let i = 0; i < details.length; i++) {
@@ -89,46 +89,35 @@ module.exports = function generateJoiMiddlewareInstance (cfg) {
         } else {
           res
             .status(opts.statusCode || cfg.statusCode || 400)
-            .end(buildErrorString(ret, type));
+            .end(buildErrorString(ret, `request ${type}`));
         }
       };
     };
   });
 
-  function response(schema, _options) {
-    const options = _options || {}
-    const {
-      joi: opts,
-      validCode = 200,
-      failedCode = 500,
-      respondOnFail = true
-    } = options
-    return validator
+  return instance;
 
-    function validator(req, res, next) {
-      res.sendValidJson = sendValidJson
+  function response (schema, opts = {}) {
+    return (req, res, next) => {
+      const resJson = res.json.bind(res)
+      res.json = validateJson
       next()
 
-      function sendValidJson(json) {
-        return Joi.validate(json, schema, opts)
-          .then(send)
-          .catch(error)
-      }
-
-      function error(error) {
-        if (respondOnFail) {
-          const errorString = buildErrorString({ error }, 'response')
-          res.status(failedCode).json(errorString)
+      function validateJson (json) {
+        const ret = Joi.validate(json, schema, opts.joi)
+        const { error, value } = ret
+        if (!error) {
+          // return res.json ret to retain express compatibility
+          return resJson(value)
+        } else if (opts.passError || cfg.passError) {
+          ret.type = 'response'
+          next(ret)
+        } else {
+          res
+            .status(opts.statusCode || cfg.statusCode || 500)
+            .end(buildErrorString(ret, 'response json'))
         }
-        throw error
-      }
-
-      function send(json) {
-        res.send(validCode).json(json)
-        return json
       }
     }
   }
-
-  return instance;
 };
