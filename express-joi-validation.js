@@ -99,23 +99,23 @@ module.exports = function generateJoiMiddlewareInstance (cfg) {
 
   function response (schema, opts = {}) {
     return (req, res, next) => {
-      const resJson = res.json.bind(res)
-      res.json = validateJson
-      next()
+      const resJson = res.json.bind(res);
+      res.json = validateJson;
+      next();
 
       function validateJson (json) {
-        const ret = Joi.validate(json, schema, opts.joi)
-        const { error, value } = ret
+        const ret = Joi.validate(json, schema, opts.joi);
+        const { error, value } = ret;
         if (!error) {
           // return res.json ret to retain express compatibility
-          return resJson(value)
+          return resJson(value);
         } else if (opts.passError || cfg.passError) {
-          ret.type = 'response'
-          next(ret)
+          ret.type = 'response';
+          next(ret);
         } else {
           res
             .status(opts.statusCode || cfg.statusCode || 500)
-            .end(buildErrorString(ret, 'response json'))
+            .end(buildErrorString(ret, 'response json'));
         }
       }
     }
