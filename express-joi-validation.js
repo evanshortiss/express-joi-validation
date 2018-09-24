@@ -98,6 +98,7 @@ module.exports = function generateJoiMiddlewareInstance (cfg) {
   return instance;
 
   function response (schema, opts = {}) {
+    const type = 'response'
     return (req, res, next) => {
       const resJson = res.json.bind(res);
       res.json = validateJson;
@@ -110,12 +111,12 @@ module.exports = function generateJoiMiddlewareInstance (cfg) {
           // return res.json ret to retain express compatibility
           return resJson(value);
         } else if (opts.passError || cfg.passError) {
-          ret.type = 'response';
+          ret.type = type;
           next(ret);
         } else {
           res
             .status(opts.statusCode || cfg.statusCode || 500)
-            .end(buildErrorString(ret, 'response json'));
+            .end(buildErrorString(ret, `${type} json`));
         }
       }
     }

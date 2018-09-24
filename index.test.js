@@ -63,16 +63,9 @@ describe('express joi', function () {
 
       res.end('ok');
     });
-
     app.get('/response/:key', middleware, (req, res) => {
       const { key } = req.params
       res.json({ key: +key || 'none' })
-    }, (err, req, res, next) => {
-      const possibles = { one: 1 }
-      const value = possibles[req.params.key]
-      res.json({
-        key: value
-      })
     })
 
     return supertest(app);
@@ -202,14 +195,14 @@ describe('express joi', function () {
   });
 
   describe('#response', function () {
-    it('should return a 500 when the key is not right for regular', function () {
+    it('should return a 500 when the key is not valid', function () {
       const middleware = mod.response(schema);
       return getRequester(middleware)
         .get('/response/one')
         .expect(500)
     })
 
-    it('should return a 200 when the key is correct for regular', function () {
+    it('should return a 200 when the key is valid', function () {
       const middleware = mod.response(schema);
       return getRequester(middleware)
         .get('/response/1')
@@ -222,7 +215,7 @@ describe('express joi', function () {
       })
       return getRequester(middleware)
         .get('/response/one')
-        .expect(200)
+        .expect(500)
     })
 
     it('should return an alternative status for failure', function () {
