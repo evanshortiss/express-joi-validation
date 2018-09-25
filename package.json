@@ -32,6 +32,7 @@
   "author": "Evan Shortiss",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^6.0.117",
     "body-parser": "~1.18.3",
     "chai": "~3.5.0",
     "clear-require": "~2.0.0",
