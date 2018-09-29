@@ -1,6 +1,12 @@
 ## CHANGELOG
 Date format is DD/MM/YYYY
 
+## 0.3.0 (29/09/2018)
+* Add response validation
+* Update dependencies
+* Drop support for Node.js 4 and below
+* Remove @types/express from dependencies
+
 ## 0.2.1 (28/10/2017)
 * Ensure "typings" are defined in package.json
 
