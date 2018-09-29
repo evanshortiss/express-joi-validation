@@ -10,8 +10,8 @@ voids I found that other Joi middleware miss such as:
 
 * Allow the developers to easily specify the order in which request inputs are
 validated.
-* Replaces the `req.body` and others with converted Joi values. The same applies
-for headers, query, and params, but...
+* Replaces the incoming `req.body` and others with converted Joi values. The
+same applies for headers, query, and params, but...
 * Retains the original `req.body` inside a new property named `req.originalBody`
 . The same applies for headers, query, and params using the `original` prefix,
 e.g `req.originalQuery` will contain the `req.query` as it looked *before*
@@ -20,7 +20,6 @@ validation.
 These are detailed below.
 * Uses `peerDependencies` to get a Joi instance of your choosing instead of
 using a fixed version.
-
 
 
 ## Install
@@ -221,6 +220,11 @@ instance was created.
 Create a middleware instance that will validate the params for an incoming
 request. Can be passed `options` that override the options passed when the
 instance was created.
+
+#### instance.response(schema, [options])
+Create a middleware instance that will validate the outgoing response.
+Can be passed `options` that override the options passed when the instance was
+created.
 
 #### instance.fields(schema, [options])
 Create a middleware instance that will validate the fields for an incoming
