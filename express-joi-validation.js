@@ -49,7 +49,7 @@ const containers = {
 };
 
 function buildErrorString (err, container) {
-  let ret = `Error validating request ${container}.`;
+  let ret = `Error validating ${container}.`;
   let details = err.error.details;
 
   for (let i = 0; i < details.length; i++) {
@@ -65,7 +65,9 @@ module.exports = function generateJoiMiddlewareInstance (cfg) {
   const Joi = cfg.joi || require('joi');
 
   // We'll return this instance of the middleware
-  const instance = {};
+  const instance = {
+    response
+  };
 
   Object.keys(containers).forEach((type) => {
     // e.g the "body" or "query" from above
@@ -87,11 +89,36 @@ module.exports = function generateJoiMiddlewareInstance (cfg) {
         } else {
           res
             .status(opts.statusCode || cfg.statusCode || 400)
-            .end(buildErrorString(ret, type));
+            .end(buildErrorString(ret, `request ${type}`));
         }
       };
     };
   });
 
   return instance;
+
+  function response (schema, opts = {}) {
+    const type = 'response'
+    return (req, res, next) => {
+      const resJson = res.json.bind(res);
+      res.json = validateJson;
+      next();
+
+      function validateJson (json) {
+        const ret = Joi.validate(json, schema, opts.joi);
+        const { error, value } = ret;
+        if (!error) {
+          // return res.json ret to retain express compatibility
+          return resJson(value);
+        } else if (opts.passError || cfg.passError) {
+          ret.type = type;
+          next(ret);
+        } else {
+          res
+            .status(opts.statusCode || cfg.statusCode || 500)
+            .end(buildErrorString(ret, `${type} json`));
+        }
+      }
+    }
+  }
 };

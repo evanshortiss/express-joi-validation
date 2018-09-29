@@ -63,6 +63,10 @@ describe('express joi', function () {
 
       res.end('ok');
     });
+    app.get('/response/:key', middleware, (req, res) => {
+      const { key } = req.params
+      res.json({ key: +key || 'none' })
+    })
 
     return supertest(app);
   }
@@ -189,6 +193,40 @@ describe('express joi', function () {
         });
     });
   });
+
+  describe('#response', function () {
+    it('should return a 500 when the key is not valid', function () {
+      const middleware = mod.response(schema);
+      return getRequester(middleware)
+        .get('/response/one')
+        .expect(500)
+    })
+
+    it('should return a 200 when the key is valid', function () {
+      const middleware = mod.response(schema);
+      return getRequester(middleware)
+        .get('/response/1')
+        .expect(200)
+    })
+
+    it('should pass an error to subsequent handler if it is asked', function () {
+      const middleware = mod.response(schema, {
+        passError: true
+      })
+      return getRequester(middleware)
+        .get('/response/one')
+        .expect(500)
+    })
+
+    it('should return an alternative status for failure', function () {
+      const middleware = mod.response(schema, {
+        statusCode: 422
+      })
+      return getRequester(middleware)
+        .get(`/response/one`)
+        .expect(422)
+    })
+  })
 
   describe('optional configs', function () {
     it('should call next on error via config.passError', function (done) {

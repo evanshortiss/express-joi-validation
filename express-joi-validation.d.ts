@@ -29,6 +29,7 @@ interface ExpressJoiInstance {
   params (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
   headers (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
   fields (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
+  response (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
 }
 
 declare function validation (cfg? : ExpressJoiConfig): ExpressJoiInstance
