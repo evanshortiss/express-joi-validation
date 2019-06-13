@@ -1,9 +1,10 @@
 # express-joi-validation
 
 ![TravisCI](https://travis-ci.org/evanshortiss/express-joi-validation.svg)
-[![npm version](https://badge.fury.io/js/express-joi-validation.svg)](https://badge.fury.io/js/express-joi-validation)
 [![Coverage Status](https://coveralls.io/repos/github/evanshortiss/express-joi-validation/badge.svg?branch=master)](https://coveralls.io/github/evanshortiss/express-joi-validation?branch=master)
-[![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/)
+[![npm version](https://badge.fury.io/js/express-joi-validation.svg)](https://www.npmjs.com/package/express-joi-validation)
+[![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-blue.svg)](http://www.typescriptlang.org/)
+[![npm downloads](https://img.shields.io/npm/dm/express-joi-validation.svg?style=flat)](https://www.npmjs.com/package/express-joi-validation)
 
 A middleware for validating express inputs using Joi schemas. Fills some of the
 voids I found that other Joi middleware miss such as:
