@@ -45,7 +45,12 @@ folder of this repository.
 ```js
 const Joi = require('joi')
 const app = require('express')()
-const validator = require('express-joi-validation')({})
+const validator = require('express-joi-validation')({
+  // You can pass a specific Joi instance using this option. By default the
+  // module will load the @hapi/joi version you have in your package.json
+  // so 99% of the time you won't need this option
+  // joi: require('joi')
+})
 
 const querySchema = Joi.object({
   type: Joi.string().required().valid('food', 'drinks', 'entertainment')
@@ -66,7 +71,7 @@ app.get('/orders', validator.query(querySchema, {joi: joiOpts}), (req, res, next
 
 ### Joi Versioning
 This module uses `peerDependencies` for the Joi version being used. This means
-whatever Joi version is in the `dependencies` of your `package.json` will be
+whatever `@hapi/joi` version is in the `dependencies` of your `package.json` will be
 used by this module.
 
 ### Validation Ordering
