@@ -1,6 +1,10 @@
 ## CHANGELOG
 Date format is DD/MM/YYYY
 
+## 1.0.0 (13/06/2019)
+* Migrated from `joi` to `@hapi/joi`.
+* Update dev dependencies.
+
 ## 0.3.0 (29/09/2018)
 * Add response validation
 * Update dependencies
