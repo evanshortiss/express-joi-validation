@@ -1,6 +1,11 @@
 ## CHANGELOG
 Date format is DD/MM/YYYY
 
+## 1.0.0 (13/06/2019)
+* Migrated from `joi` to `@hapi/joi`.
+* Dropped Node.js 6 & 7 support (@hapi/joi forces this)
+* Update dev dependencies.
+
 ## 0.3.0 (29/09/2018)
 * Add response validation
 * Update dependencies

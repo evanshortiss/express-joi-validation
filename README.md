@@ -1,9 +1,11 @@
 # express-joi-validation
 
 ![TravisCI](https://travis-ci.org/evanshortiss/express-joi-validation.svg)
-[![npm version](https://badge.fury.io/js/express-joi-validation.svg)](https://badge.fury.io/js/express-joi-validation)
 [![Coverage Status](https://coveralls.io/repos/github/evanshortiss/express-joi-validation/badge.svg?branch=master)](https://coveralls.io/github/evanshortiss/express-joi-validation?branch=master)
-[![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/)
+[![npm version](https://badge.fury.io/js/express-joi-validation.svg)](https://www.npmjs.com/package/express-joi-validation)
+[![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-blue.svg)](http://www.typescriptlang.org/)
+[![npm downloads](https://img.shields.io/npm/dm/express-joi-validation.svg?style=flat)](https://www.npmjs.com/package/express-joi-validation)
+[![Known Vulnerabilities](https://snyk.io//test/github/evanshortiss/express-joi-validation/badge.svg?targetFile=package.json)](https://snyk.io//test/github/evanshortiss/express-joi-validation?targetFile=package.json)
 
 A middleware for validating express inputs using Joi schemas. Fills some of the
 voids I found that other Joi middleware miss such as:
@@ -45,7 +47,12 @@ folder of this repository.
 ```js
 const Joi = require('joi')
 const app = require('express')()
-const validator = require('express-joi-validation')({})
+const validator = require('express-joi-validation')({
+  // You can pass a specific Joi instance using this option. By default the
+  // module will load the @hapi/joi version you have in your package.json
+  // so 99% of the time you won't need this option
+  // joi: require('joi')
+})
 
 const querySchema = Joi.object({
   type: Joi.string().required().valid('food', 'drinks', 'entertainment')
@@ -66,7 +73,7 @@ app.get('/orders', validator.query(querySchema, {joi: joiOpts}), (req, res, next
 
 ### Joi Versioning
 This module uses `peerDependencies` for the Joi version being used. This means
-whatever Joi version is in the `dependencies` of your `package.json` will be
+whatever `@hapi/joi` version is in the `dependencies` of your `package.json` will be
 used by this module.
 
 ### Validation Ordering
