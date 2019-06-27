@@ -1,29 +1,43 @@
-import * as Joi from 'joi';
+import * as Joi from '@hapi/joi';
 import * as express from 'express'
+import { IncomingHttpHeaders } from 'http';
 
-declare module 'express' {
-  interface Request {
-    originalBody: Array<any>|object|undefined
-    originalQuery: object
-    originalHeaders: object
-    originalParams: object
-    originalFields: object
-  }
+export function createValidator (cfg? : ExpressJoiConfig): ExpressJoiInstance
+
+export interface ValidatedRequest<T extends ValidatedRequestSchema> extends express.Request {
+  body: T['body']
+  query: T['query']
+  headers: T['headers']
+  params: T['params']
+  fields: T['fields']
+  originalBody: any
+  originalQuery: any
+  originalHeaders: IncomingHttpHeaders
+  originalParams: any
+  originalFields: any
 }
 
-interface ExpressJoiConfig {
+export interface ValidatedRequestSchema {
+  body?: any
+  query?: any
+  headers?: any
+  params?: any
+  fields?: any
+}
+
+export interface ExpressJoiConfig {
   joi?: typeof Joi
   statusCode?: number
   passError?: boolean
 }
 
-interface ExpressJoiContainerConfig {
+export interface ExpressJoiContainerConfig {
   joi?: Joi.ValidationOptions
   statusCode?: number
   passError?: boolean
 }
 
-interface ExpressJoiInstance {
+export interface ExpressJoiInstance {
   body (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
   query (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
   params (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
@@ -31,9 +45,3 @@ interface ExpressJoiInstance {
   fields (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
   response (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
 }
-
-declare function validation (cfg? : ExpressJoiConfig): ExpressJoiInstance
-
-declare namespace validation {}
-
-export = validation

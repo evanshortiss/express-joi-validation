@@ -10,6 +10,7 @@
 A middleware for validating express inputs using Joi schemas. Fills some of the
 voids I found that other Joi middleware miss such as:
 
+* TypeScript support.
 * Allow the developers to easily specify the order in which request inputs are
 validated.
 * Replaces the incoming `req.body` and others with converted Joi values. The
@@ -26,13 +27,16 @@ using a fixed version.
 
 ## Install
 
-You need to install `joi` along with this module for it to work since it relies
-on it as a peer dependency. Currently this module has only been tested with joi
-version 10.0 and higher.
+You need to install `@hapi/joi` along with this module for it to work since it relies
+on it as a peer dependency. For TypeScript you should also install `@types/hapi__joi`.
+
+For example example
 
 ```
-# we install our middleware AND joi since it's required by our middleware
-npm i express-joi-validation joi --save
+npm i express-joi-validation @hapi/joi --save
+
+# If using TypeScript (also useful for JavaScript developers)
+npm i @types/hapi__joi --save-dev
 ```
 
 
@@ -41,13 +45,12 @@ npm i express-joi-validation joi --save
 An example application can be found in the [example/](https://github.com/evanshortiss/express-joi-validation/tree/master/example)
 folder of this repository.
 
-
-## Usage
+## Usage (JavaScript)
 
 ```js
 const Joi = require('joi')
 const app = require('express')()
-const validator = require('express-joi-validation')({
+const validator = require('express-joi-validation').createValidator({
   // You can pass a specific Joi instance using this option. By default the
   // module will load the @hapi/joi version you have in your package.json
   // so 99% of the time you won't need this option
@@ -55,16 +58,60 @@ const validator = require('express-joi-validation')({
 })
 
 const querySchema = Joi.object({
-  type: Joi.string().required().valid('food', 'drinks', 'entertainment')
+  name: Joi.string().required()
 })
 
-app.get('/orders', validator.query(querySchema, {joi: joiOpts}), (req, res, next) => {
-  console.log(
-    `original query ${JSON.stringify(req.originalQuery)} vs. the sanatised query ${JSON.stringify(req.query)}`
-  )
-  
-  // if we're in here then the query was valid!
-  res.end(`you placed an order of type ${req.query.type}`)
+app.get('/orders', validator.query(querySchema), (req, res) => {
+  // If we're in here then the query was valid!  
+  res.end(`Hello ${req.query.name}!`)
+})
+```
+
+## Usage (TypeScript)
+
+For TypeScript you a helper `ValidatedRequest` is provided. This extends the
+`express.Request` type and allows you to pass a schema using generics to
+ensure type safety in your handler function.
+
+One downside to this is that there's some duplication. You can minimise this
+duplication by using [joi-extract-type](https://github.com/TCMiranda/joi-extract-type/).
+
+```ts
+import * as Joi from '@hapi/joi'
+import * as express from 'express'
+import {
+  // Use this as a replacement for express.Request
+  ValidatedRequest,
+  // Extend from this to define a valid schema type/interface
+  ValidatedRequestSchema,
+  // Creates a validator that generates middlewares
+  createValidator
+} from 'express-joi-validation'
+
+// Extends Joi to generate our ValidatedRequestSchema members
+// This is optional, but without it you need to manually generate
+// a type or interface
+import 'joi-extract-type'
+
+const app = express()
+const validator = createValidator()
+
+const querySchema = Joi.object({
+  name: Joi.string().required()
+})
+
+interface HelloRequestSchema extends ValidatedRequestSchema {
+  query: Joi.extractType<typeof querySchema>
+
+  // Without Joi.extractType we'd need to use the following:
+  // query: {
+  //   name: string
+  // }
+}
+
+app.get('/hello', validator.query(querySchema), (req: ValidatedRequest<HelloRequestSchema>, res) => {
+  // Woohoo, type safety for req.query!
+  res.end(`Hello ${req.query.name}!`)
 })
 ```
 
@@ -157,7 +204,7 @@ If you don't like the default error format returned by this module you can
 override it like so:
 
 ```js
-const validator = require('express-joi-validation')({
+const validator = require('express-joi-validation').createValidator({
   passError: true // NOTE: this tells the module to pass the error along for you
 });
 
