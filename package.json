@@ -1,16 +1,14 @@
 {
   "name": "express-joi-validation",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "validate express application inputs and parameters using joi",
   "main": "express-joi-validation.js",
   "scripts": {
-    "precommit": "npm run format && npm test",
-    "format": "prettier --no-semi --single-quote --write index.test.js example/**/*.js example/**/*.ts express-joi-validation.js",
     "unit": "mocha *.test.js",
     "ts-test": "tsc express-joi-validation.d.ts --target es5 --module commonjs --noEmit",
     "test": "npm run ts-test && npm run cover && nyc check-coverage --statements 100 --lines 100 --functions 100 --branches 100",
     "cover": "nyc --reporter=lcov --produce-source-map=true npm run unit",
-    "example": "nodemon example/server.js",
+    "example": "nodemon example/javascript/server.js",
     "example-ts": "tsc example/typescript/server.ts && node example/typescript/server.js",
     "coveralls": "npm run cover && cat coverage/lcov.info | coveralls"
   },
@@ -29,14 +27,17 @@
     "sanatize",
     "sanatise",
     "input",
-    "parameter"
+    "parameter",
+    "typescript",
+    "ts",
+    "tsc"
   ],
   "author": "Evan Shortiss",
   "license": "MIT",
   "devDependencies": {
     "@hapi/joi": "~15.0.3",
     "@types/express": "~4.0.39",
-    "@types/joi": "~13.6.0",
+    "@types/hapi__joi": "~15.0.2",
     "@types/node": "^6.0.117",
     "body-parser": "~1.18.3",
     "chai": "~3.5.0",
@@ -45,6 +46,8 @@
     "express": "~4.16.3",
     "express-formidable": "~1.0.0",
     "husky": "~1.0.1",
+    "joi-extract-type": "~15.0.0",
+    "lint-staged": "~8.2.1",
     "lodash": "~4.17.4",
     "mocha": "~5.2.0",
     "mocha-lcov-reporter": "~1.3.0",
@@ -54,12 +57,39 @@
     "proxyquire": "~1.7.11",
     "sinon": "~1.17.7",
     "supertest": "~3.0.0",
-    "typescript": "~2.5.3"
+    "typescript": "~3.5.2"
   },
   "peerDependencies": {
     "@hapi/joi": "*"
   },
   "engines": {
     "node": ">=8.0.0"
+  },
+  "directories": {
+    "example": "example"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evanshortiss/express-joi-validation.git"
+  },
+  "bugs": {
+    "url": "https://github.com/evanshortiss/express-joi-validation/issues"
+  },
+  "homepage": "https://github.com/evanshortiss/express-joi-validation#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.js": [
+      "prettier --no-semi --single-quote --write",
+      "git add"
+    ],
+    "**/*.ts": [
+      "prettier --no-semi --single-quote --write",
+      "git add"
+    ]
   }
 }

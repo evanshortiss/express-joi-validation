@@ -1,6 +1,11 @@
 ## CHANGELOG
 Date format is DD/MM/YYYY
 
+## 2.0.0 (27/06/2019)
+* Improved TypeScript support with better typings
+* Changed export from a factory function to a module exposing `createValidator()` 
+* Improved TypeScript examples and README
+
 ## 1.0.0 (13/06/2019)
 * Migrated from `joi` to `@hapi/joi`.
 * Dropped Node.js 6 & 7 support (@hapi/joi forces this)
