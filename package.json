@@ -4,7 +4,7 @@
   "description": "validate express application inputs and parameters using joi",
   "main": "express-joi-validation.js",
   "scripts": {
-    "precommit": "npm run format && npm test",
+    "precommit": "npm run format && npm test && git add .",
     "format": "prettier --no-semi --single-quote --write index.test.js example/**/*.js example/**/*.ts express-joi-validation.js",
     "unit": "mocha *.test.js",
     "ts-test": "tsc express-joi-validation.d.ts --target es5 --module commonjs --noEmit",

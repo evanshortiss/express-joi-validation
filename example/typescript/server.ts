@@ -26,15 +26,22 @@ app.get('/ping', (req, res) => {
 app.use('/hello', HelloWorld)
 
 // Custom error handler
-app.use((err: any|ExpressJoiError, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (err && err.error && err.error.isJoi) {
-    const e: ExpressJoiError = err
-    // e.g "you submitted a bad query"
-    res.status(400).end(`You submitted a bad ${e.type} paramater.`)
-  } else {
-    res.status(500).end('internal server error')
+app.use(
+  (
+    err: any | ExpressJoiError,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    if (err && err.error && err.error.isJoi) {
+      const e: ExpressJoiError = err
+      // e.g "you submitted a bad query"
+      res.status(400).end(`You submitted a bad ${e.type} paramater.`)
+    } else {
+      res.status(500).end('internal server error')
+    }
   }
-})
+)
 
 app.listen(port, (err: any) => {
   if (err) {

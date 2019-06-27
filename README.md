@@ -7,43 +7,39 @@
 [![npm downloads](https://img.shields.io/npm/dm/express-joi-validation.svg?style=flat)](https://www.npmjs.com/package/express-joi-validation)
 [![Known Vulnerabilities](https://snyk.io//test/github/evanshortiss/express-joi-validation/badge.svg?targetFile=package.json)](https://snyk.io//test/github/evanshortiss/express-joi-validation?targetFile=package.json)
 
-A middleware for validating express inputs using Joi schemas. Fills some of the
-voids I found that other Joi middleware miss such as:
+A middleware for validating express inputs using Joi schemas. Features include:
 
 * TypeScript support.
-* Allow the developers to easily specify the order in which request inputs are
-validated.
-* Replaces the incoming `req.body` and others with converted Joi values. The
-same applies for headers, query, and params, but...
-* Retains the original `req.body` inside a new property named `req.originalBody`
+* Specify the order in which request inputs are validated.
+* Replaces the incoming `req.body`, `req.query`, etc and with the validated result 
+* Retains the original `req.body` inside a new property named `req.originalBody`.
 . The same applies for headers, query, and params using the `original` prefix,
-e.g `req.originalQuery` will contain the `req.query` as it looked *before*
-validation.
-* Passes sensible default options to Joi for headers, params, query, and body.
-These are detailed below.
+e.g `req.originalQuery`
+* Chooses sensible default Joi options for headers, params, query, and body.
 * Uses `peerDependencies` to get a Joi instance of your choosing instead of
 using a fixed version.
 
 
 ## Install
 
-You need to install `@hapi/joi` along with this module for it to work since it relies
-on it as a peer dependency. For TypeScript you should also install `@types/hapi__joi`.
-
-For example example
+You need to install `@hapi/joi` with this module since it relies on it in
+`peerDependencies`.
 
 ```
 npm i express-joi-validation @hapi/joi --save
+```
 
-# If using TypeScript (also useful for JavaScript developers)
+For TypeScript developers you also need to install Joi types. JavaScript
+developers can benefit from this too:
+
+```
 npm i @types/hapi__joi --save-dev
 ```
 
 
-## Example Code
-
-An example application can be found in the [example/](https://github.com/evanshortiss/express-joi-validation/tree/master/example)
-folder of this repository.
+## Example
+A JavaScript and TypeScript example can be found in the
+[example/](/tree/master/example) folder of this repository.
 
 ## Usage (JavaScript)
 
@@ -53,8 +49,7 @@ const app = require('express')()
 const validator = require('express-joi-validation').createValidator({
   // You can pass a specific Joi instance using this option. By default the
   // module will load the @hapi/joi version you have in your package.json
-  // so 99% of the time you won't need this option
-  // joi: require('joi')
+  // joi: require('@hapi/joi')
 })
 
 const querySchema = Joi.object({
@@ -69,7 +64,7 @@ app.get('/orders', validator.query(querySchema), (req, res) => {
 
 ## Usage (TypeScript)
 
-For TypeScript you a helper `ValidatedRequest` is provided. This extends the
+For TypeScript a helper `ValidatedRequest` type is provided. This extends the
 `express.Request` type and allows you to pass a schema using generics to
 ensure type safety in your handler function.
 
@@ -88,9 +83,8 @@ import {
   createValidator
 } from 'express-joi-validation'
 
-// Extends Joi to generate our ValidatedRequestSchema members
 // This is optional, but without it you need to manually generate
-// a type or interface
+// a type or interface for ValidatedRequestSchema members
 import 'joi-extract-type'
 
 const app = express()
@@ -101,36 +95,43 @@ const querySchema = Joi.object({
 })
 
 interface HelloRequestSchema extends ValidatedRequestSchema {
-  query: Joi.extractType<typeof querySchema>
+  [ContainerTypes.Query]: Joi.extractType<typeof querySchema>
 
-  // Without Joi.extractType we'd need to use the following:
+  // Without Joi.extractType you would do this:
   // query: {
   //   name: string
   // }
 }
 
-app.get('/hello', validator.query(querySchema), (req: ValidatedRequest<HelloRequestSchema>, res) => {
-  // Woohoo, type safety for req.query!
-  res.end(`Hello ${req.query.name}!`)
-})
+app.get(
+  '/hello',
+  validator.query(querySchema),
+  (req: ValidatedRequest<HelloRequestSchema>, res) => {
+    // Woohoo, type safety and intellisense for req.query!
+    res.end(`Hello ${req.query.name}!`)
+  }
+)
 ```
 
 
 ## Behaviours
 
 ### Joi Versioning
-This module uses `peerDependencies` for the Joi version being used. This means
-whatever `@hapi/joi` version is in the `dependencies` of your `package.json` will be
-used by this module.
+You can explicitly pass a versiong of Joi using the `joi` option supported by
+the `createValidator` function.
+
+Otherwise, this module uses `peerDependencies` for the Joi version being used.
+This means whatever `@hapi/joi` version is in the `dependencies` of your
+`package.json` will be used by this module.
+
 
 ### Validation Ordering
-If you'd like to validate different request inputs in differing orders it's
-simple, just define the the middleware in the order desired.
+Validation can be performed in a specific order using standard express
+middleware behaviour. Pass the middleware in the desired order.
 
-Here's an example where we do headers, body, and finally the query:
+Here's an example where the order is headers, body, query:
 
 ```js
-// verify headers, then body, then query
 route.get(
   '/tickets',
   validator.headers(headerSchema),
@@ -144,8 +145,12 @@ route.get(
 When validation fails, this module will default to returning a HTTP 400 with
 the Joi validation error as a `text/plain` response type.
 
-A `passError` option is supported to override this behaviour, and force the
-middleware to pass the error to the express error handler you've defined.
+A `passError` option is supported to override this behaviour. This option
+forces the middleware to pass the error to the express error handler using the
+standard `next` function behaviour.
+
+See the [Custom Express Error Handler](#custom-express-error-handler) section
+for an example.
 
 ### Joi Options
 It is possible to pass specific Joi options to each validator like so:
@@ -169,7 +174,7 @@ route.get(
 );
 ```
 
-The following sensible defaults are applied if you pass none:
+The following sensible defaults for Joi are applied if none are passed:
 
 #### Query
 * convert: true
@@ -198,14 +203,13 @@ The following sensible defaults are applied if you pass none:
 * abortEarly: false
 
 
-## Custom Express Error handler
-
-If you don't like the default error format returned by this module you can
-override it like so:
+## Custom Express Error Handler
 
 ```js
 const validator = require('express-joi-validation').createValidator({
-  passError: true // NOTE: this tells the module to pass the error along for you
+  // This options forces validation to pass any errors the express
+  // error handler instead of generating a 400 error
+  passError: true
 });
 
 const app = require('express')();
@@ -221,7 +225,7 @@ app.get('/orders', validator.query(require('./query-schema')), (req, res, next) 
 // After your routes add a standard express error handler. This will be passed the Joi
 // error, plus an extra "type" field so we can tell what type of validation failed
 app.use((err, req, res, next) => {
-  if (err.error.isJoi) {
+  if (err && err.error && err.error.isJoi) {
     // we had a joi error, let's return a custom 400 json response
     res.status(400).json({
       type: err.type, // will be "query" here, but could be "headers", "body", or "params"
@@ -234,56 +238,89 @@ app.use((err, req, res, next) => {
 });
 ```
 
+In TypeScript environments `err.type` can be verified against the exported
+`ContainerTypes`:
+
+```ts
+import { ContainerTypes } from 'express-joi-validation'
+
+app.use((err: any|ExpressJoiError, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  // ContainerTypes is an enum exported by this module. It contains strings
+  // such as "body", "headers", "query"...
+  if (err && err.type in ContainerTypes) {
+    const e: ExpressJoiError = err
+    // e.g "you submitted a bad query paramater"
+    res.status(400).end(`You submitted a bad ${e.type} paramater`)
+  } else {
+    res.status(500).end('internal server error')
+  }
+})
+```
 
 ## API
 
-### module(config)
+### Structure
 
-A factory function an instance of the module for use. Can pass the following
-options:
+* module (express-joi-validation)
+  * createValidator(config)
+    * query(options)
+    * body(options)
+    * params(options)
+    * headers(options)
+    * fields(options)
 
-* passError - Set this to true if you'd like validation errors to get passed
-to the express error handler so you can handle them manually vs. the default behaviour that returns a 400.
-* statusCode - The status code to use when validation fails and _passError_
-is false. Default is 400.
 
-### Instance Functions
+### createValidator(config)
+Creates a validator. Supports the following options:
 
-Each instance function can be passed an options Object with the following:
+* passError (default: `false`) - Passes validation errors to the express error
+hander using `next(err)` when `true`
+* statusCode (default: `400`) - The status code used when validation fails and
+`passError` is `false`.
+
+#### validator.query(schema, [options])
+Creates a middleware instance that will validate the `req.query` for an
+incoming request. Can be passed `options` that override the config passed
+when the validator was created.
+
+Supported options are:
 
 * joi - Custom options to pass to `Joi.validate`.
 * passError - Same as above.
 * statusCode - Same as above.
 
-#### instance.query(schema, [options])
-Create a middleware instance that will validate the query for an incoming
+#### validator.body(schema, [options])
+Creates a middleware instance that will validate the `req.body` for an incoming
 request. Can be passed `options` that override the options passed when the
-instance was created.
+validator was created.
 
-#### instance.body(schema, [options])
-Create a middleware instance that will validate the body for an incoming
-request. Can be passed `options` that override the options passed when the
-instance was created.
+Supported options are the same as `validator.query`.
 
-#### instance.headers(schema, [options])
-Create a middleware instance that will validate the headers for an incoming
-request. Can be passed `options` that override the options passed when the
-instance was created.
+#### validator.headers(schema, [options])
+Creates a middleware instance that will validate the `req.headers` for an
+incoming request. Can be passed `options` that override the options passed
+when the validator was created.
 
-#### instance.params(schema, [options])
-Create a middleware instance that will validate the params for an incoming
-request. Can be passed `options` that override the options passed when the
-instance was created.
+Supported options are the same as `validator.query`.
 
-#### instance.response(schema, [options])
-Create a middleware instance that will validate the outgoing response.
+#### validator.params(schema, [options])
+Creates a middleware instance that will validate the `req.params` for an
+incoming request. Can be passed `options` that override the options passed
+when the validator was created.
+
+Supported options are the same as `validator.query`.
+
+#### validator.response(schema, [options])
+Creates a middleware instance that will validate the outgoing response.
 Can be passed `options` that override the options passed when the instance was
 created.
 
-#### instance.fields(schema, [options])
-Create a middleware instance that will validate the fields for an incoming
+Supported options are the same as `validator.query`.
+
+#### validator.fields(schema, [options])
+Creates a middleware instance that will validate the fields for an incoming
 request. This is designed for use with `express-formidable`. Can be passed
-`options` that override the options passed when the instance was created.
+`options` that override the options passed when the validator was created.
 
 The `instance.params` middleware is a little different to the others. It _must_
 be attached directly to the route it is related to. Here's a sample:
@@ -304,3 +341,5 @@ app.get('/orders/:id', validator.params(schema), (req, res, next) => {
   // This WILL have a validated "id"
 })
 ```
+
+Supported options are the same as `validator.query`.
