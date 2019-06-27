@@ -27,7 +27,10 @@
     "sanatize",
     "sanatise",
     "input",
-    "parameter"
+    "parameter",
+    "typescript",
+    "ts",
+    "tsc"
   ],
   "author": "Evan Shortiss",
   "license": "MIT",
