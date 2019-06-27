@@ -2,7 +2,8 @@ import * as Joi from '@hapi/joi'
 import {
   ValidatedRequest,
   ValidatedRequestSchema,
-  createValidator
+  createValidator,
+  ContainerTypes
 } from '../../express-joi-validation'
 import { Router } from 'express'
 import 'joi-extract-type'
@@ -14,7 +15,7 @@ const querySchema = Joi.object({
 })
 
 interface HelloRequestSchema extends ValidatedRequestSchema {
-  query: Joi.extractType<typeof querySchema>
+  [ContainerTypes.Query]: Joi.extractType<typeof querySchema>
 }
 
 route.get(
