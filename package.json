@@ -4,8 +4,6 @@
   "description": "validate express application inputs and parameters using joi",
   "main": "express-joi-validation.js",
   "scripts": {
-    "precommit": "npm run format && npm test && git add .",
-    "format": "prettier --no-semi --single-quote --write index.test.js example/**/*.js example/**/*.ts express-joi-validation.js",
     "unit": "mocha *.test.js",
     "ts-test": "tsc express-joi-validation.d.ts --target es5 --module commonjs --noEmit",
     "test": "npm run ts-test && npm run cover && nyc check-coverage --statements 100 --lines 100 --functions 100 --branches 100",
@@ -46,6 +44,7 @@
     "express-formidable": "~1.0.0",
     "husky": "~1.0.1",
     "joi-extract-type": "~15.0.0",
+    "lint-staged": "~8.2.1",
     "lodash": "~4.17.4",
     "mocha": "~5.2.0",
     "mocha-lcov-reporter": "~1.3.0",
@@ -74,5 +73,16 @@
   "bugs": {
     "url": "https://github.com/evanshortiss/express-joi-validation/issues"
   },
-  "homepage": "https://github.com/evanshortiss/express-joi-validation#readme"
+  "homepage": "https://github.com/evanshortiss/express-joi-validation#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js,*.ts": [
+      "prettier --no-semi --single-quote",
+      "git add"
+    ]
+  }
 }
