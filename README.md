@@ -38,8 +38,8 @@ npm i @types/hapi__joi --save-dev
 
 
 ## Example
-A JavaScript and TypeScript example can be found in the
-[example/](/tree/master/example) folder of this repository.
+A JavaScript and TypeScript example can be found in the `example/` folder of
+this repository.
 
 ## Usage (JavaScript)
 
