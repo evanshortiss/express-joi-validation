@@ -91,7 +91,7 @@ describe('express joi', function() {
         .required()
     })
 
-    mod = require('./express-joi-validation.js')()
+    mod = require('./express-joi-validation.js').createValidator()
   })
 
   describe('#headers', function() {
@@ -251,7 +251,7 @@ describe('express joi', function() {
 
   describe('optional configs', function() {
     it('should call next on error via config.passError', function(done) {
-      const mod = require('./express-joi-validation.js')({
+      const mod = require('./express-joi-validation.js').createValidator({
         passError: true
       })
       const mw = mod.query(
@@ -300,7 +300,7 @@ describe('express joi', function() {
       }
       resStub.status = sinon.stub().returns(resStub)
 
-      const mod = require('./express-joi-validation.js')({
+      const mod = require('./express-joi-validation.js').createValidator({
         joi: joiStub,
         statusCode: statusCode
       })

@@ -59,8 +59,10 @@ function buildErrorString(err, container) {
   return ret
 }
 
-module.exports = function () {
-  throw new Error('express-joi-validation: exported member is no longer a factory function. use exported createValidator function instead')
+module.exports = function() {
+  throw new Error(
+    'express-joi-validation: exported member is no longer a factory function. use exported createValidator function instead'
+  )
 }
 
 module.exports.createValidator = function generateJoiMiddlewareInstance(cfg) {

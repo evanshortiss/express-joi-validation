@@ -1,7 +1,10 @@
-
 import * as Joi from '@hapi/joi'
-import { ValidatedRequest, ValidatedRequestSchema, createValidator } from '../../express-joi-validation'
-import { Router } from 'express';
+import {
+  ValidatedRequest,
+  ValidatedRequestSchema,
+  createValidator
+} from '../../express-joi-validation'
+import { Router } from 'express'
 import 'joi-extract-type'
 
 const route = Router()
@@ -14,8 +17,12 @@ interface HelloRequestSchema extends ValidatedRequestSchema {
   query: Joi.extractType<typeof querySchema>
 }
 
-route.get('/hello', validator.query(querySchema), (req: ValidatedRequest<HelloRequestSchema>, res) => {
-  res.end(`Hello ${req.query.name}`)
-})
+route.get(
+  '/hello',
+  validator.query(querySchema),
+  (req: ValidatedRequest<HelloRequestSchema>, res) => {
+    res.end(`Hello ${req.query.name}`)
+  }
+)
 
 export = route
