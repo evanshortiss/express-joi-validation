@@ -19,6 +19,17 @@ e.g `req.originalQuery`
 * Uses `peerDependencies` to get a Joi instance of your choosing instead of
 using a fixed version.
 
+## Quick Links
+
+* [API](#api)
+* [Usage (JavaScript)](#usage-javascript)
+* [Usage (TypeScript)](#usage-typescript)
+* [Behaviours](#behaviours)
+  * [Joi Versioning](#joi-versioning)
+  * [Validation Ordering](#validation-ordering)
+  * [Error Handling](#error-handling)
+  * [Joi Options](#joi-options)
+  * [Custom Express Error Handler](#custom-express-error-handler)
 
 ## Install
 
