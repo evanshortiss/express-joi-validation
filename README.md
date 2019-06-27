@@ -113,6 +113,92 @@ app.get(
 )
 ```
 
+## API
+
+### Structure
+
+* module (express-joi-validation)
+  * [createValidator(config)](#createvalidatorconfig)
+    * [query(options)](#validatorqueryschema-options)
+    * [body(options)](#validatorbodyschema-options)
+    * [headers(options)](#headersschema-options)
+    * [params(options)](#validatorparamsschema-options)
+    * [fields(options)](#validatorfieldsschema-options)
+
+
+### createValidator(config)
+Creates a validator. Supports the following options:
+
+* passError (default: `false`) - Passes validation errors to the express error
+hander using `next(err)` when `true`
+* statusCode (default: `400`) - The status code used when validation fails and
+`passError` is `false`.
+
+#### validator.query(schema, [options])
+Creates a middleware instance that will validate the `req.query` for an
+incoming request. Can be passed `options` that override the config passed
+when the validator was created.
+
+Supported options are:
+
+* joi - Custom options to pass to `Joi.validate`.
+* passError - Same as above.
+* statusCode - Same as above.
+
+#### validator.body(schema, [options])
+Creates a middleware instance that will validate the `req.body` for an incoming
+request. Can be passed `options` that override the options passed when the
+validator was created.
+
+Supported options are the same as `validator.query`.
+
+#### validator.headers(schema, [options])
+Creates a middleware instance that will validate the `req.headers` for an
+incoming request. Can be passed `options` that override the options passed
+when the validator was created.
+
+Supported options are the same as `validator.query`.
+
+#### validator.params(schema, [options])
+Creates a middleware instance that will validate the `req.params` for an
+incoming request. Can be passed `options` that override the options passed
+when the validator was created.
+
+Supported options are the same as `validator.query`.
+
+#### validator.response(schema, [options])
+Creates a middleware instance that will validate the outgoing response.
+Can be passed `options` that override the options passed when the instance was
+created.
+
+Supported options are the same as `validator.query`.
+
+#### validator.fields(schema, [options])
+Creates a middleware instance that will validate the fields for an incoming
+request. This is designed for use with `express-formidable`. Can be passed
+`options` that override the options passed when the validator was created.
+
+The `instance.params` middleware is a little different to the others. It _must_
+be attached directly to the route it is related to. Here's a sample:
+
+```js
+const schema = Joi.object({
+  id: Joi.number().integer().required()
+});
+
+// INCORRECT
+app.use(validator.params(schema));
+app.get('/orders/:id', (req, res, next) => {
+  // The "id" parameter will NOT have been validated here!
+});
+
+// CORRECT
+app.get('/orders/:id', validator.params(schema), (req, res, next) => {
+  // This WILL have a validated "id"
+})
+```
+
+Supported options are the same as `validator.query`.
 
 ## Behaviours
 
@@ -257,89 +343,3 @@ app.use((err: any|ExpressJoiError, req: express.Request, res: express.Response, 
 })
 ```
 
-## API
-
-### Structure
-
-* module (express-joi-validation)
-  * createValidator(config)
-    * query(options)
-    * body(options)
-    * params(options)
-    * headers(options)
-    * fields(options)
-
-
-### createValidator(config)
-Creates a validator. Supports the following options:
-
-* passError (default: `false`) - Passes validation errors to the express error
-hander using `next(err)` when `true`
-* statusCode (default: `400`) - The status code used when validation fails and
-`passError` is `false`.
-
-#### validator.query(schema, [options])
-Creates a middleware instance that will validate the `req.query` for an
-incoming request. Can be passed `options` that override the config passed
-when the validator was created.
-
-Supported options are:
-
-* joi - Custom options to pass to `Joi.validate`.
-* passError - Same as above.
-* statusCode - Same as above.
-
-#### validator.body(schema, [options])
-Creates a middleware instance that will validate the `req.body` for an incoming
-request. Can be passed `options` that override the options passed when the
-validator was created.
-
-Supported options are the same as `validator.query`.
-
-#### validator.headers(schema, [options])
-Creates a middleware instance that will validate the `req.headers` for an
-incoming request. Can be passed `options` that override the options passed
-when the validator was created.
-
-Supported options are the same as `validator.query`.
-
-#### validator.params(schema, [options])
-Creates a middleware instance that will validate the `req.params` for an
-incoming request. Can be passed `options` that override the options passed
-when the validator was created.
-
-Supported options are the same as `validator.query`.
-
-#### validator.response(schema, [options])
-Creates a middleware instance that will validate the outgoing response.
-Can be passed `options` that override the options passed when the instance was
-created.
-
-Supported options are the same as `validator.query`.
-
-#### validator.fields(schema, [options])
-Creates a middleware instance that will validate the fields for an incoming
-request. This is designed for use with `express-formidable`. Can be passed
-`options` that override the options passed when the validator was created.
-
-The `instance.params` middleware is a little different to the others. It _must_
-be attached directly to the route it is related to. Here's a sample:
-
-```js
-const schema = Joi.object({
-  id: Joi.number().integer().required()
-});
-
-// INCORRECT
-app.use(validator.params(schema));
-app.get('/orders/:id', (req, res, next) => {
-  // The "id" parameter will NOT have been validated here!
-});
-
-// CORRECT
-app.get('/orders/:id', validator.params(schema), (req, res, next) => {
-  // This WILL have a validated "id"
-})
-```
-
-Supported options are the same as `validator.query`.
