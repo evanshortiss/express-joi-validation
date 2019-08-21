@@ -1,6 +1,10 @@
 ## CHANGELOG
 Date format is DD/MM/YYYY
 
+## 2.0.1 (22/08/2019)
+* Fixed compilation issue with TypeScript example when `strict` compiler flag is `true`.
+* Updated test script to include building TypeScript example
+
 ## 2.0.0 (27/06/2019)
 * Improved TypeScript support with better typings
 * Changed export from a factory function to a module exposing `createValidator()` 

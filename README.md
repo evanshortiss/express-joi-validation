@@ -117,9 +117,11 @@ interface HelloRequestSchema extends ValidatedRequestSchema {
 app.get(
   '/hello',
   validator.query(querySchema),
-  (req: ValidatedRequest<HelloRequestSchema>, res) => {
+  (req, res) => {
     // Woohoo, type safety and intellisense for req.query!
-    res.end(`Hello ${req.query.name}!`)
+    const vreq = req as ValidatedRequest<HelloRequestSchema>
+
+    res.end(`Hello ${vreq.query.name}!`)
   }
 )
 ```

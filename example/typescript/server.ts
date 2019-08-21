@@ -2,9 +2,9 @@
 
 const port = 3030
 
-import * as express from 'express'
+import express from 'express'
 import * as Joi from '@hapi/joi'
-import * as HelloWorld from './route'
+import HelloWorld from './route'
 import { createValidator, ExpressJoiError } from '../../express-joi-validation'
 
 const app = express()

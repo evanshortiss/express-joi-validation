@@ -18,12 +18,10 @@ interface HelloRequestSchema extends ValidatedRequestSchema {
   [ContainerTypes.Query]: Joi.extractType<typeof querySchema>
 }
 
-route.get(
-  '/hello',
-  validator.query(querySchema),
-  (req: ValidatedRequest<HelloRequestSchema>, res) => {
-    res.end(`Hello ${req.query.name}`)
-  }
-)
+route.get('/hello', validator.query(querySchema), (req, res) => {
+  const vreq = req as ValidatedRequest<HelloRequestSchema>
 
-export = route
+  res.end(`Hello ${vreq.query.name}`)
+})
+
+export default route
