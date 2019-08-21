@@ -10,7 +10,7 @@
     "moduleResolution": "node",
     "sourceMap": false,
     "baseUrl": ".",
-    "declaration": true
+    "declaration": false
   },
   "include": ["server.ts", "route.ts"]
 }
