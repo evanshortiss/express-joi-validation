@@ -4,12 +4,13 @@
   "description": "validate express application inputs and parameters using joi",
   "main": "express-joi-validation.js",
   "scripts": {
+    "build-ts": "tsc --build example/typescript/tsconfig.json",
     "unit": "mocha *.test.js",
     "ts-test": "tsc express-joi-validation.d.ts --target es5 --module commonjs --noEmit",
-    "test": "npm run ts-test && npm run cover && nyc check-coverage --statements 100 --lines 100 --functions 100 --branches 100",
+    "test": "npm run ts-test && npm run cover && nyc check-coverage --statements 100 --lines 100 --functions 100 --branches 100 && npm run build-ts",
     "cover": "nyc --reporter=lcov --produce-source-map=true npm run unit",
     "example": "nodemon example/javascript/server.js",
-    "example-ts": "tsc example/typescript/server.ts && node example/typescript/server.js",
+    "example-ts": "npm run build-ts && node example/typescript/server.js",
     "coveralls": "npm run cover && cat coverage/lcov.info | coveralls"
   },
   "typings": "express-joi-validation.d.ts",
@@ -83,11 +84,11 @@
     }
   },
   "lint-staged": {
-    "**/*.js": [
+    "*.js": [
       "prettier --no-semi --single-quote --write",
       "git add"
     ],
-    "**/*.ts": [
+    "*.ts": [
       "prettier --no-semi --single-quote --write",
       "git add"
     ]
