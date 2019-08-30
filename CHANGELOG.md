@@ -1,7 +1,7 @@
 ## CHANGELOG
 Date format is DD/MM/YYYY
 
-## 3.0.0 (25/08/2019)
+## 3.0.0 (30/08/2019)
 * Removed `fields`, `originalQuery`, `originalHeaders`, `originalBody`,
 `originalParams`, and `originalFields` from `ValidatedRequest`. This simplifies
 usage with TypeScript's *strict* mode.
