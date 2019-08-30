@@ -53,6 +53,6 @@ app.listen(port, (err: any) => {
     `Try accessing http://localhost:${port}/ping or http://localhost:${port}/hello?name=dean to get some data.\n`
   )
   console.log(
-    `Now try access hhttp://localhost:${port}/hello. You should get an error complaining that your querystring is invalid.`
+    `Now try access http://localhost:${port}/hello. You should get an error complaining that your querystring is invalid.`
   )
 })

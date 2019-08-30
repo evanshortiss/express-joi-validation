@@ -1,12 +1,12 @@
-import * as Joi from '@hapi/joi';
+import * as Joi from '@hapi/joi'
 import * as express from 'express'
-import { IncomingHttpHeaders } from 'http';
+import { IncomingHttpHeaders } from 'http'
 
 /**
  * Creates an instance of this module that can be used to generate middleware
  * @param cfg
  */
-export function createValidator (cfg? : ExpressJoiConfig): ExpressJoiInstance
+export function createValidator(cfg?: ExpressJoiConfig): ExpressJoiInstance
 
 /**
  * These are the named properties on an express.Request that this module can
@@ -40,7 +40,25 @@ export type ValidatedRequestSchema = Record<ContainerTypes, any>
  * *req.body* and others are strongly typed using your
  * *ValidatedRequestSchema*
  */
-export interface ValidatedRequest<T extends ValidatedRequestSchema> extends express.Request {
+export interface ValidatedRequest<T extends ValidatedRequestSchema>
+  extends express.Request {
+  body: T[ContainerTypes.Body]
+  query: T[ContainerTypes.Query]
+  headers: T[ContainerTypes.Headers]
+  params: T[ContainerTypes.Params]
+}
+
+/**
+ * Use this in conjunction with *ValidatedRequestSchema* instead of
+ * express.Request for route handlers. This ensures *req.query*,
+ * *req.body* and others are strongly typed using your *ValidatedRequestSchema*
+ *
+ * This will also allow you to access the original body, params, etc. as they
+ * were before validation.
+ */
+export interface ValidatedRequestWithRawInputsAndFields<
+  T extends ValidatedRequestSchema
+> extends express.Request {
   body: T[ContainerTypes.Body]
   query: T[ContainerTypes.Query]
   headers: T[ContainerTypes.Headers]
@@ -54,7 +72,7 @@ export interface ValidatedRequest<T extends ValidatedRequestSchema> extends expr
 }
 
 /**
- * Configuration options supportef by *createValidator(config)*
+ * Configuration options supported by *createValidator(config)*
  */
 export interface ExpressJoiConfig {
   joi?: typeof Joi
@@ -76,10 +94,28 @@ export interface ExpressJoiContainerConfig {
  * calling *createValidator*
  */
 export interface ExpressJoiInstance {
-  body (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
-  query (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
-  params (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
-  headers (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
-  fields (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
-  response (schema: Joi.Schema, cfg?: ExpressJoiContainerConfig): express.RequestHandler
+  body(
+    schema: Joi.Schema,
+    cfg?: ExpressJoiContainerConfig
+  ): express.RequestHandler
+  query(
+    schema: Joi.Schema,
+    cfg?: ExpressJoiContainerConfig
+  ): express.RequestHandler
+  params(
+    schema: Joi.Schema,
+    cfg?: ExpressJoiContainerConfig
+  ): express.RequestHandler
+  headers(
+    schema: Joi.Schema,
+    cfg?: ExpressJoiContainerConfig
+  ): express.RequestHandler
+  fields(
+    schema: Joi.Schema,
+    cfg?: ExpressJoiContainerConfig
+  ): express.RequestHandler
+  response(
+    schema: Joi.Schema,
+    cfg?: ExpressJoiContainerConfig
+  ): express.RequestHandler
 }

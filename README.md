@@ -75,7 +75,8 @@ app.get('/orders', validator.query(querySchema), (req, res) => {
 
 ## Usage (TypeScript)
 
-For TypeScript a helper `ValidatedRequest` type is provided. This extends the
+For TypeScript a helper `ValidatedRequest` and
+`ValidatedRequestWithRawInputsAndFields` type is provided. This extends the
 `express.Request` type and allows you to pass a schema using generics to
 ensure type safety in your handler function.
 
@@ -117,11 +118,9 @@ interface HelloRequestSchema extends ValidatedRequestSchema {
 app.get(
   '/hello',
   validator.query(querySchema),
-  (req, res) => {
+  (req: ValidatedRequest<HelloRequestSchema>, res) => {
     // Woohoo, type safety and intellisense for req.query!
-    const vreq = req as ValidatedRequest<HelloRequestSchema>
-
-    res.end(`Hello ${vreq.query.name}!`)
+    res.end(`Hello ${req.query.name}!`)
   }
 )
 ```

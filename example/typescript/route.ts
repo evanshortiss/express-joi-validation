@@ -1,6 +1,8 @@
 import * as Joi from '@hapi/joi'
+import formidable from 'express-formidable'
 import {
   ValidatedRequest,
+  ValidatedRequestWithRawInputsAndFields,
   ValidatedRequestSchema,
   createValidator,
   ContainerTypes
@@ -10,18 +12,34 @@ import 'joi-extract-type'
 
 const route = Router()
 const validator = createValidator()
-const querySchema = Joi.object({
+const schema = Joi.object({
   name: Joi.string().required()
 })
 
-interface HelloRequestSchema extends ValidatedRequestSchema {
-  [ContainerTypes.Query]: Joi.extractType<typeof querySchema>
+interface HelloGetRequestSchema extends ValidatedRequestSchema {
+  [ContainerTypes.Query]: Joi.extractType<typeof schema>
 }
 
-route.get('/hello', validator.query(querySchema), (req, res) => {
-  const vreq = req as ValidatedRequest<HelloRequestSchema>
+interface HelloPostRequestSchema extends ValidatedRequestSchema {
+  [ContainerTypes.Fields]: Joi.extractType<typeof schema>
+}
 
-  res.end(`Hello ${vreq.query.name}`)
+// curl http://localhost:3030/hello/?name=express
+route.get(
+  '/',
+  validator.query(schema),
+  (req: ValidatedRequest<HelloGetRequestSchema>, res) => {
+    res.end(`Hello ${req.query.name}`)
+  }
+)
+
+// curl -X POST -F 'name=express' http://localhost:3030/hello
+route.post('/', formidable(), validator.fields(schema), (req, res) => {
+  const vreq = req as ValidatedRequestWithRawInputsAndFields<
+    HelloPostRequestSchema
+  >
+
+  res.end(`Hello ${vreq.fields.name}`)
 })
 
 export default route
