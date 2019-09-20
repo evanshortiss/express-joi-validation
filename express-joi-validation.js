@@ -67,9 +67,6 @@ module.exports = function() {
 
 module.exports.createValidator = function generateJoiMiddlewareInstance(cfg) {
   cfg = cfg || {} // default to an empty config
-
-  const Joi = cfg.joi || require('@hapi/joi')
-
   // We'll return this instance of the middleware
   const instance = {
     response
@@ -83,7 +80,7 @@ module.exports.createValidator = function generateJoiMiddlewareInstance(cfg) {
       opts = opts || {} // like config, default to empty object
 
       return function exporessJoiValidator(req, res, next) {
-        const ret = Joi.validate(req[type], schema, opts.joi || container.joi)
+        const ret = schema.validate(req[type], opts.joi || container.joi)
 
         if (!ret.error) {
           req[container.storageProperty] = req[type]
@@ -111,7 +108,7 @@ module.exports.createValidator = function generateJoiMiddlewareInstance(cfg) {
       next()
 
       function validateJson(json) {
-        const ret = Joi.validate(json, schema, opts.joi)
+        const ret = schema.validate(json, opts.joi)
         const { error, value } = ret
         if (!error) {
           // return res.json ret to retain express compatibility
