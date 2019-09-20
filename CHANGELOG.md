@@ -1,6 +1,11 @@
 ## CHANGELOG
 Date format is DD/MM/YYYY
 
+## 4.0.0 (20/09/2019)
+* Update to support Joi v16.x
+* No longer supports passing a Joi instance to factory
+* Finally removed deprecated function on `module.exports` from v2
+
 ## 3.0.0 (30/08/2019)
 * Removed `fields`, `originalQuery`, `originalHeaders`, `originalBody`,
 `originalParams`, and `originalFields` from `ValidatedRequest`. This simplifies
