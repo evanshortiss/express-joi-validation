@@ -75,7 +75,6 @@ export interface ValidatedRequestWithRawInputsAndFields<
  * Configuration options supported by *createValidator(config)*
  */
 export interface ExpressJoiConfig {
-  joi?: typeof Joi
   statusCode?: number
   passError?: boolean
 }

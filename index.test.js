@@ -269,47 +269,5 @@ describe('express joi', function() {
         done()
       })
     })
-
-    it('should use supplied config.joi and config.statusCode', function(done) {
-      const errStr = '"id" is required'
-      const statusCode = 403
-
-      const joiStub = {
-        validate: sinon.stub().returns({
-          error: {
-            details: [
-              {
-                message: errStr
-              }
-            ]
-          }
-        })
-      }
-
-      const reqStub = {
-        query: {}
-      }
-
-      const resStub = {
-        end: str => {
-          expect(joiStub.validate.called).to.be.true
-          expect(resStub.status.calledWith(statusCode)).to.be.true
-          expect(str).to.equal(`Error validating request query. ${errStr}.`)
-          done()
-        }
-      }
-      resStub.status = sinon.stub().returns(resStub)
-
-      const mod = require('./express-joi-validation.js').createValidator({
-        joi: joiStub,
-        statusCode: statusCode
-      })
-
-      const mw = mod.query(Joi.object({}))
-
-      mw(reqStub, resStub, () => {
-        done(new Error('next should not be called'))
-      })
-    })
   })
 })
