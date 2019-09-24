@@ -57,11 +57,7 @@ this repository.
 ```js
 const Joi = require('joi')
 const app = require('express')()
-const validator = require('express-joi-validation').createValidator({
-  // You can pass a specific Joi instance using this option. By default the
-  // module will load the @hapi/joi version you have in your package.json
-  // joi: require('@hapi/joi')
-})
+const validator = require('express-joi-validation').createValidator({})
 
 const querySchema = Joi.object({
   name: Joi.string().required()
@@ -215,10 +211,7 @@ Supported options are the same as `validator.query`.
 ## Behaviours
 
 ### Joi Versioning
-You can explicitly pass a versiong of Joi using the `joi` option supported by
-the `createValidator` function.
-
-Otherwise, this module uses `peerDependencies` for the Joi version being used.
+This module uses `peerDependencies` for the Joi version being used.
 This means whatever `@hapi/joi` version is in the `dependencies` of your
 `package.json` will be used by this module.
 

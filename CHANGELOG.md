@@ -1,6 +1,9 @@
 ## CHANGELOG
 Date format is DD/MM/YYYY
 
+## 4.0.1 (24/09/2019)
+* Remove outdated "joi" option in README
+
 ## 4.0.0 (20/09/2019)
 * Update to support Joi v16.x
 * No longer supports passing a Joi instance to factory
