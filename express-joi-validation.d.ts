@@ -24,7 +24,7 @@ export enum ContainerTypes {
  * Use this in you express error handler if you've set *passError* to true
  * when calling *createValidator*
  */
-export interface ExpressJoiError {
+export interface ExpressJoiError extends Joi.ValidationResult {
   type: ContainerTypes
 }
 
