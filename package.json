@@ -29,10 +29,10 @@
   "author": "Evan Shortiss",
   "license": "MIT",
   "devDependencies": {
-    "@hapi/joi": "~16.1.2",
+    "@hapi/joi": "~16.1.7",
     "@types/express": "~4.0.39",
     "@types/express-formidable": "~1.0.4",
-    "@types/hapi__joi": "~15.0.2",
+    "@types/hapi__joi": "~16.0.3",
     "@types/node": "~10.14.18",
     "body-parser": "~1.18.3",
     "chai": "~3.5.0",
