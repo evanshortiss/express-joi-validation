@@ -1,6 +1,9 @@
 ## CHANGELOG
 Date format is DD/MM/YYYY
 
+## 4.0.2 (12/11/2019)
+* Apply a fix for compatibility with Joi v16 typings.
+
 ## 4.0.1 (24/09/2019)
 * Remove outdated "joi" option in README
 
