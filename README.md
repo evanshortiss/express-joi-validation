@@ -80,6 +80,7 @@ ensure type safety in your handler function.
 import * as Joi from '@hapi/joi'
 import * as express from 'express'
 import {
+  ContainerTypes,
   // Use this as a replacement for express.Request
   ValidatedRequest,
   // Extend from this to define a valid schema type/interface
