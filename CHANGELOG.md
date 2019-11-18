@@ -1,6 +1,9 @@
 ## CHANGELOG
 Date format is DD/MM/YYYY
 
+## 4.0.3 (18/11/2019)
+* Fix TypeScript example in the README.
+
 ## 4.0.2 (12/11/2019)
 * Apply a fix for compatibility with Joi v16 typings.
 
