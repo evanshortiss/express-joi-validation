@@ -166,10 +166,10 @@ app.get(
   * [createValidator(config)](#createvalidatorconfig)
     * [query(options)](#validatorqueryschema-options)
     * [body(options)](#validatorbodyschema-options)
-    * [headers(options)](#headersschema-options)
+    * [headers(options)](#validatorheadersschema-options)
     * [params(options)](#validatorparamsschema-options)
+    * [response(options)](#validatorresponseschema-options)
     * [fields(options)](#validatorfieldsschema-options)
-
 
 ### createValidator(config)
 Creates a validator. Supports the following options:
