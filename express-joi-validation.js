@@ -71,7 +71,7 @@ module.exports.createValidator = function generateJoiMiddlewareInstance(cfg) {
     const container = containers[type]
 
     instance[type] = function(schema, opts) {
-      opts = opts || {} // like config, default to empty object
+      opts = opts || cfg.joi || {} // like config, default to empty object
 
       return function expressJoiValidator(req, res, next) {
         const ret = schema.validate(req[type], opts.joi || container.joi)

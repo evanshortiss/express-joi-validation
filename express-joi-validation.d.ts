@@ -78,6 +78,7 @@ export interface ValidatedRequestWithRawInputsAndFields<
 export interface ExpressJoiConfig {
   statusCode?: number
   passError?: boolean
+  joi?: object
 }
 
 /**
