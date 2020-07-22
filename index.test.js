@@ -59,6 +59,24 @@ describe('express joi', function() {
     )
 
     app.post(
+      '/global-joi-config',
+      require('body-parser').json(),
+      middleware,
+      (req, res) => {
+        expect(req.body).to.exist
+        expect(req.originalBody).to.exist
+
+        expect(req.originalBody.known).to.exist
+        expect(req.originalBody.known).to.exist
+
+        expect(req.originalBody.unknown).to.exist
+        expect(req.originalBody.unknown).to.exist
+
+        res.end('ok')
+      }
+    )
+
+    app.post(
       '/fields-check',
       require('express-formidable')(),
       middleware,
@@ -268,6 +286,31 @@ describe('express joi', function() {
         expect(err.value).to.be.an('object')
         done()
       })
+    })
+  })
+
+  describe('#joiGlobalOptionMerging.', function() {
+    it('should return a 200 since our body is valid', function(done) {
+      const mod = require('./express-joi-validation.js').createValidator({
+        passError: true,
+        joi: {
+          allowUnknown: true
+        }
+      })
+      const schema = Joi.object({
+        known: Joi.boolean().required()
+      })
+
+      const mw = mod.body(schema)
+
+      getRequester(mw)
+        .post('/global-joi-config')
+        .send({
+          known: true,
+          unknown: true
+        })
+        .expect(200)
+        .end(done)
     })
   })
 })
