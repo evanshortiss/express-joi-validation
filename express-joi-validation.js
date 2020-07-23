@@ -72,9 +72,9 @@ module.exports.createValidator = function generateJoiMiddlewareInstance(cfg) {
 
     instance[type] = function(schema, opts) {
       opts = opts || {} // like config, default to empty object
-
+      const computedOpts = { ...container.joi, ...cfg.joi, ...opts.joi }
       return function expressJoiValidator(req, res, next) {
-        const ret = schema.validate(req[type], opts.joi || container.joi)
+        const ret = schema.validate(req[type], computedOpts)
 
         if (!ret.error) {
           req[container.storageProperty] = req[type]
