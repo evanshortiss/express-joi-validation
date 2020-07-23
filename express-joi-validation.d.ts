@@ -1,6 +1,7 @@
 import * as Joi from '@hapi/joi'
 import * as express from 'express'
 import { IncomingHttpHeaders } from 'http'
+import { ParsedQs } from 'qs'
 
 /**
  * Creates an instance of this module that can be used to generate middleware
@@ -43,7 +44,7 @@ export type ValidatedRequestSchema = Record<ContainerTypes, any>
 export interface ValidatedRequest<T extends ValidatedRequestSchema>
   extends express.Request {
   body: T[ContainerTypes.Body]
-  query: T[ContainerTypes.Query]
+  query: T[ContainerTypes.Query] & ParsedQs
   headers: T[ContainerTypes.Headers]
   params: T[ContainerTypes.Params]
 }

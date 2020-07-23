@@ -1,6 +1,6 @@
 {
   "name": "express-joi-validation",
-  "version": "4.0.3",
+  "version": "4.0.4-beta.0",
   "description": "validate express application inputs and parameters using joi",
   "main": "express-joi-validation.js",
   "scripts": {
@@ -34,6 +34,7 @@
     "@types/express-formidable": "~1.0.4",
     "@types/hapi__joi": "~16.0.3",
     "@types/node": "~10.14.18",
+    "@types/qs": "~6.9.3",
     "body-parser": "~1.18.3",
     "chai": "~3.5.0",
     "clear-require": "~2.0.0",
@@ -50,6 +51,7 @@
     "nyc": "~14.1.1",
     "prettier": "~1.14.3",
     "proxyquire": "~1.7.11",
+    "qs": "~6.9.4",
     "sinon": "~1.17.7",
     "supertest": "~3.0.0",
     "typescript": "~3.5.2"
