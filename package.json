@@ -57,7 +57,7 @@
     "typescript": "~3.5.2"
   },
   "peerDependencies": {
-    "@hapi/joi": "16"
+    "@hapi/joi": "15"
   },
   "engines": {
     "node": ">=8.0.0"
