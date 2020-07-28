@@ -1,6 +1,7 @@
 import * as Joi from '@hapi/joi'
 import * as express from 'express'
 import { IncomingHttpHeaders } from 'http'
+import { ParsedQs } from 'qs'
 
 /**
  * Creates an instance of this module that can be used to generate middleware
@@ -24,7 +25,7 @@ export enum ContainerTypes {
  * Use this in you express error handler if you've set *passError* to true
  * when calling *createValidator*
  */
-export interface ExpressJoiError extends Joi.ValidationResult<any> {
+export interface ExpressJoiError extends Joi.ValidationResult {
   type: ContainerTypes
 }
 
@@ -43,7 +44,7 @@ export type ValidatedRequestSchema = Record<ContainerTypes, any>
 export interface ValidatedRequest<T extends ValidatedRequestSchema>
   extends express.Request {
   body: T[ContainerTypes.Body]
-  query: T[ContainerTypes.Query]
+  query: T[ContainerTypes.Query] & ParsedQs
   headers: T[ContainerTypes.Headers]
   params: T[ContainerTypes.Params]
 }
@@ -75,9 +76,9 @@ export interface ValidatedRequestWithRawInputsAndFields<
  * Configuration options supported by *createValidator(config)*
  */
 export interface ExpressJoiConfig {
-  joi?: typeof Joi
   statusCode?: number
   passError?: boolean
+  joi?: object
 }
 
 /**
