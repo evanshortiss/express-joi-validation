@@ -57,11 +57,7 @@ this repository.
 ```js
 const Joi = require('joi')
 const app = require('express')()
-const validator = require('express-joi-validation').createValidator({
-  // You can pass a specific Joi instance using this option. By default the
-  // module will load the @hapi/joi version you have in your package.json
-  // joi: require('@hapi/joi')
-})
+const validator = require('express-joi-validation').createValidator({})
 
 const querySchema = Joi.object({
   name: Joi.string().required()
@@ -80,8 +76,45 @@ For TypeScript a helper `ValidatedRequest` and
 `express.Request` type and allows you to pass a schema using generics to
 ensure type safety in your handler function.
 
-One downside to this is that there's some duplication. You can minimise this
-duplication by using [joi-extract-type](https://github.com/TCMiranda/joi-extract-type/).
+```ts
+import * as Joi from '@hapi/joi'
+import * as express from 'express'
+import {
+  ContainerTypes,
+  // Use this as a replacement for express.Request
+  ValidatedRequest,
+  // Extend from this to define a valid schema type/interface
+  ValidatedRequestSchema,
+  // Creates a validator that generates middlewares
+  createValidator
+} from 'express-joi-validation'
+
+const app = express()
+const validator = createValidator()
+
+const querySchema = Joi.object({
+  name: Joi.string().required()
+})
+
+interface HelloRequestSchema extends ValidatedRequestSchema {
+  [ContainerTypes.Query]: {
+    name: string
+  }
+}
+
+app.get(
+  '/hello',
+  validator.query(querySchema),
+  (req: ValidatedRequest<HelloRequestSchema>, res) => {
+    // Woohoo, type safety and intellisense for req.query!
+    res.end(`Hello ${req.query.name}!`)
+  }
+)
+```
+
+You can minimise some duplication by using [joi-extract-type](https://github.com/TCMiranda/joi-extract-type/).
+
+_NOTE: this does not work with Joi v16+ at the moment. See [this issue](https://github.com/TCMiranda/joi-extract-type/issues/23)._
 
 ```ts
 import * as Joi from '@hapi/joi'
@@ -133,10 +166,10 @@ app.get(
   * [createValidator(config)](#createvalidatorconfig)
     * [query(options)](#validatorqueryschema-options)
     * [body(options)](#validatorbodyschema-options)
-    * [headers(options)](#headersschema-options)
+    * [headers(options)](#validatorheadersschema-options)
     * [params(options)](#validatorparamsschema-options)
+    * [response(options)](#validatorresponseschema-options)
     * [fields(options)](#validatorfieldsschema-options)
-
 
 ### createValidator(config)
 Creates a validator. Supports the following options:
@@ -215,10 +248,7 @@ Supported options are the same as `validator.query`.
 ## Behaviours
 
 ### Joi Versioning
-You can explicitly pass a versiong of Joi using the `joi` option supported by
-the `createValidator` function.
-
-Otherwise, this module uses `peerDependencies` for the Joi version being used.
+This module uses `peerDependencies` for the Joi version being used.
 This means whatever `@hapi/joi` version is in the `dependencies` of your
 `package.json` will be used by this module.
 

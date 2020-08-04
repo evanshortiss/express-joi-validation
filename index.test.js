@@ -59,6 +59,24 @@ describe('express joi', function() {
     )
 
     app.post(
+      '/global-joi-config',
+      require('body-parser').json(),
+      middleware,
+      (req, res) => {
+        expect(req.body).to.exist
+        expect(req.originalBody).to.exist
+
+        expect(req.originalBody.known).to.exist
+        expect(req.originalBody.known).to.exist
+
+        expect(req.originalBody.unknown).to.exist
+        expect(req.originalBody.unknown).to.exist
+
+        res.end('ok')
+      }
+    )
+
+    app.post(
       '/fields-check',
       require('express-formidable')(),
       middleware,
@@ -269,47 +287,30 @@ describe('express joi', function() {
         done()
       })
     })
+  })
 
-    it('should use supplied config.joi and config.statusCode', function(done) {
-      const errStr = '"id" is required'
-      const statusCode = 403
-
-      const joiStub = {
-        validate: sinon.stub().returns({
-          error: {
-            details: [
-              {
-                message: errStr
-              }
-            ]
-          }
-        })
-      }
-
-      const reqStub = {
-        query: {}
-      }
-
-      const resStub = {
-        end: str => {
-          expect(joiStub.validate.called).to.be.true
-          expect(resStub.status.calledWith(statusCode)).to.be.true
-          expect(str).to.equal(`Error validating request query. ${errStr}.`)
-          done()
-        }
-      }
-      resStub.status = sinon.stub().returns(resStub)
-
+  describe('#joiGlobalOptionMerging.', function() {
+    it('should return a 200 since our body is valid', function(done) {
       const mod = require('./express-joi-validation.js').createValidator({
-        joi: joiStub,
-        statusCode: statusCode
+        passError: true,
+        joi: {
+          allowUnknown: true
+        }
+      })
+      const schema = Joi.object({
+        known: Joi.boolean().required()
       })
 
-      const mw = mod.query(Joi.object({}))
+      const mw = mod.body(schema)
 
-      mw(reqStub, resStub, () => {
-        done(new Error('next should not be called'))
-      })
+      getRequester(mw)
+        .post('/global-joi-config')
+        .send({
+          known: true,
+          unknown: true
+        })
+        .expect(200)
+        .end(done)
     })
   })
 })

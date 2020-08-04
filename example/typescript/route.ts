@@ -8,7 +8,6 @@ import {
   ContainerTypes
 } from '../../express-joi-validation'
 import { Router } from 'express'
-import 'joi-extract-type'
 
 const route = Router()
 const validator = createValidator()
@@ -17,11 +16,15 @@ const schema = Joi.object({
 })
 
 interface HelloGetRequestSchema extends ValidatedRequestSchema {
-  [ContainerTypes.Query]: Joi.extractType<typeof schema>
+  [ContainerTypes.Query]: {
+    name: string
+  }
 }
 
 interface HelloPostRequestSchema extends ValidatedRequestSchema {
-  [ContainerTypes.Fields]: Joi.extractType<typeof schema>
+  [ContainerTypes.Fields]: {
+    name: string
+  }
 }
 
 // curl http://localhost:3030/hello/?name=express
