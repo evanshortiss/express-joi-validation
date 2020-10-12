@@ -1,4 +1,4 @@
-import * as Joi from '@hapi/joi'
+import * as Joi from 'joi'
 import * as express from 'express'
 import { IncomingHttpHeaders } from 'http'
 import { ParsedQs } from 'qs'

@@ -1,6 +1,6 @@
 'use strict'
 
-const Joi = require('@hapi/joi')
+const Joi = require('joi')
 const sinon = require('sinon')
 const supertest = require('supertest')
 const expect = require('chai').expect

@@ -33,11 +33,11 @@ using a fixed version.
 
 ## Install
 
-You need to install `@hapi/joi` with this module since it relies on it in
+You need to install `joi` with this module since it relies on it in
 `peerDependencies`.
 
 ```
-npm i express-joi-validation @hapi/joi --save
+npm i express-joi-validation joi --save
 ```
 
 For TypeScript developers you also need to install Joi types. JavaScript
@@ -77,7 +77,7 @@ For TypeScript a helper `ValidatedRequest` and
 ensure type safety in your handler function.
 
 ```ts
-import * as Joi from '@hapi/joi'
+import * as Joi from 'joi'
 import * as express from 'express'
 import {
   ContainerTypes,
@@ -117,7 +117,7 @@ You can minimise some duplication by using [joi-extract-type](https://github.com
 _NOTE: this does not work with Joi v16+ at the moment. See [this issue](https://github.com/TCMiranda/joi-extract-type/issues/23)._
 
 ```ts
-import * as Joi from '@hapi/joi'
+import * as Joi from 'joi'
 import * as express from 'express'
 import {
   // Use this as a replacement for express.Request
@@ -249,7 +249,7 @@ Supported options are the same as `validator.query`.
 
 ### Joi Versioning
 This module uses `peerDependencies` for the Joi version being used.
-This means whatever `@hapi/joi` version is in the `dependencies` of your
+This means whatever `joi` version is in the `dependencies` of your
 `package.json` will be used by this module.
 
 
