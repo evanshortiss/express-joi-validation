@@ -40,14 +40,6 @@ You need to install `joi` with this module since it relies on it in
 npm i express-joi-validation joi --save
 ```
 
-For TypeScript developers you also need to install Joi types. JavaScript
-developers can benefit from this too:
-
-```
-npm i @types/hapi__joi --save-dev
-```
-
-
 ## Example
 A JavaScript and TypeScript example can be found in the `example/` folder of
 this repository.
