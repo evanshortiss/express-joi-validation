@@ -6,7 +6,7 @@ const port = 8080
 
 const app = require('express')()
 const Joi = require('joi')
-const validator = require('../index.js')({})
+const validator = require('../../').createValidator()
 
 const headerSchema = Joi.object({
   host: Joi.string().required(),
@@ -24,7 +24,7 @@ app.listen(port, err => {
 
   console.log(`\napp started on ${port}\n`)
   console.log(
-    `Try accessing http://localhost:${port}/users/1001 or http://localhost:${port}/users?name=dean to get some data.\n`
+    `Try accessing http://localhost:${port}/users/1001 or http://localhost:${port}/users?name=barry to get some data.\n`
   )
   console.log(
     `Now try access http://localhost:${port}/users?age=50. You should get an error complaining that your querystring is invalid.`

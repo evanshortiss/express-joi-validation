@@ -4,7 +4,7 @@ const route = (module.exports = require('express').Router())
 const users = require('./users')
 const Joi = require('joi')
 const _ = require('lodash')
-const validator = require('../index.js')({})
+const validator = require('../../').createValidator()
 
 /**
  * This "GET /:id" endpoint is used to query users by their ID
