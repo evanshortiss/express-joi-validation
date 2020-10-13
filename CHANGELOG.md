@@ -1,7 +1,7 @@
 ## CHANGELOG
 Date format is DD/MM/YYYY
 
-## 5.0.0 (12/10/2020)
+## 5.0.0 (13/10/2020)
 * Update to use Joi v17.x
 * Change from using peerDependency of "@hapi/joi" to "joi"
 
