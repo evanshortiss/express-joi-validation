@@ -3,7 +3,7 @@
 const port = 3030
 
 import express from 'express'
-import * as Joi from '@hapi/joi'
+import * as Joi from 'joi'
 import HelloWorld from './route'
 import { createValidator, ExpressJoiError } from '../../express-joi-validation'
 
@@ -43,11 +43,7 @@ app.use(
   }
 )
 
-app.listen(port, (err: any) => {
-  if (err) {
-    throw err
-  }
-
+app.listen(port, () => {
   console.log(`\napp started on ${port}\n`)
   console.log(
     `Try accessing http://localhost:${port}/ping or http://localhost:${port}/hello?name=dean to get some data.\n`
