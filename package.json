@@ -59,7 +59,7 @@
     "joi": "17"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   },
   "directories": {
     "example": "example"

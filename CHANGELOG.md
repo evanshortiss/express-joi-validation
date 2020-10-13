@@ -2,8 +2,9 @@
 Date format is DD/MM/YYYY
 
 ## 5.0.0 (13/10/2020)
-* Update to use Joi v17.x
-* Change from using peerDependency of "@hapi/joi" to "joi"
+* Drop Node.js 8 support.
+* Update to use Joi v17.x.
+* Change from using peerDependency of "@hapi/joi" to "joi".
 
 ## 4.0.3 (18/11/2019)
 * Fix TypeScript example in the README.
