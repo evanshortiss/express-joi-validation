@@ -1,6 +1,6 @@
 {
   "name": "express-joi-validation",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "validate express application inputs and parameters using joi",
   "main": "express-joi-validation.js",
   "scripts": {
@@ -40,8 +40,8 @@
     "express": "~4.16.3",
     "express-formidable": "~1.0.0",
     "husky": "~1.0.1",
-    "joi": "~17.2.1",
-    "joi-extract-type": "~15.0.0",
+    "joi": "~17.5.0",
+    "joi-extract-type": "~15.0.8",
     "lint-staged": "~8.2.1",
     "lodash": "~4.17.15",
     "mocha": "~8.1.3",
