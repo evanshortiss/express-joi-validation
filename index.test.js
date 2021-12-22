@@ -8,7 +8,7 @@ const expect = require('chai').expect
 describe('express joi', function() {
   var schema, mod
 
-  function getRequester(middleware) {
+  function getRequester(middleware, errMiddlware = undefined) {
     const app = require('express')()
 
     // Must apply params middleware inline with the route to match param names
@@ -94,6 +94,9 @@ describe('express joi', function() {
       const { key } = req.params
       res.json({ key: +key || 'none' })
     })
+    if (errMiddlware) {
+      app.use(errMiddlware)
+    }
 
     return supertest(app)
   }
@@ -248,13 +251,27 @@ describe('express joi', function() {
         .expect(200)
     })
 
-    it('should pass an error to subsequent handler if it is asked', function() {
+    it('should pass an error to subsequent handler if it is asked', function(done) {
+      const errorHandler = (err, req, res, next) => {
+        if (err && err.error && err.error.isJoi) {
+          res.status(422).json({
+            type: err.type,
+            message: err.error.toString()
+          })
+        } else next(err)
+      }
+
       const middleware = mod.response(schema, {
         passError: true
       })
-      return getRequester(middleware)
+      const res = getRequester(middleware, errorHandler)
         .get('/response/one')
-        .expect(500)
+        .expect(422)
+        .end(function(err, res) {
+          expect(res.body.type).to.contain('response')
+          expect(res.body.message).to.contain('ValidationError:')
+          done()
+        })
     })
 
     it('should return an alternative status for failure', function() {

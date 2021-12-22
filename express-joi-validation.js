@@ -108,6 +108,8 @@ module.exports.createValidator = function generateJoiMiddlewareInstance(cfg) {
           // return res.json ret to retain express compatibility
           return resJson(value)
         } else if (opts.passError || cfg.passError) {
+          // return res.json to allow error handler to modify the json
+          res.json = resJson
           ret.type = type
           next(ret)
         } else {
