@@ -8,6 +8,21 @@ const expect = require('chai').expect
 describe('express joi', function() {
   var schema, mod
 
+  const errorHandler = (err, req, res, next) => {
+    let fixupResponse = require('./express-joi-validation.js').fixupResponse
+    if (err) {
+      if (err.error && err.error.isJoi) {
+        res.status(422).json({
+          type: err.type,
+          message: err.error.toString()
+        })
+      } else {
+        fixupResponse(res)
+        res.status(500).send({ message: err.message })
+      }
+    } else next(err)
+  }
+
   function getRequester(middleware, errMiddlware = undefined) {
     const app = require('express')()
 
@@ -93,6 +108,9 @@ describe('express joi', function() {
     app.get('/response/:key', middleware, (req, res) => {
       const { key } = req.params
       res.json({ key: +key || 'none' })
+    })
+    app.get('/error', middleware, (req, res, next) => {
+      next(new Error('an error'))
     })
     if (errMiddlware) {
       app.use(errMiddlware)
@@ -252,15 +270,6 @@ describe('express joi', function() {
     })
 
     it('should pass an error to subsequent handler if it is asked', function(done) {
-      const errorHandler = (err, req, res, next) => {
-        if (err && err.error && err.error.isJoi) {
-          res.status(422).json({
-            type: err.type,
-            message: err.error.toString()
-          })
-        } else next(err)
-      }
-
       const middleware = mod.response(schema, {
         passError: true
       })
@@ -270,6 +279,19 @@ describe('express joi', function() {
         .end(function(err, res) {
           expect(res.body.type).to.contain('response')
           expect(res.body.message).to.contain('ValidationError:')
+          done()
+        })
+    })
+
+    it('Allow error handler to work if error occured in request handler', function(done) {
+      const middleware = mod.response(schema, {
+        passError: true
+      })
+      const res = getRequester(middleware, errorHandler)
+        .get('/error')
+        .expect(422)
+        .end(function(err, res) {
+          expect(res.body.message).to.contain('an error')
           done()
         })
     })
