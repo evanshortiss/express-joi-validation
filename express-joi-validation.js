@@ -86,7 +86,7 @@ module.exports.createValidator = function generateJoiMiddlewareInstance(cfg) {
         } else {
           res
             .status(opts.statusCode || cfg.statusCode || 400)
-            .end(buildErrorString(ret, `request ${type}`))
+            .end(opts.jsonResponse || cfg.jsonResponse ? {errors: error.details} : buildErrorString(ret, `request ${type}`))
         }
       }
     }

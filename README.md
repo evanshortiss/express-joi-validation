@@ -170,6 +170,7 @@ Creates a validator. Supports the following options:
 hander using `next(err)` when `true`
 * statusCode (default: `400`) - The status code used when validation fails and
 `passError` is `false`.
+* jsonResponse (default: `false`) - Error response JSON format
 
 #### validator.query(schema, [options])
 Creates a middleware instance that will validate the `req.query` for an
@@ -181,6 +182,7 @@ Supported options are:
 * joi - Custom options to pass to `Joi.validate`.
 * passError - Same as above.
 * statusCode - Same as above.
+* jsonResponse - Same as above.
 
 #### validator.body(schema, [options])
 Creates a middleware instance that will validate the `req.body` for an incoming
