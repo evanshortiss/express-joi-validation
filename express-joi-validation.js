@@ -119,3 +119,83 @@ module.exports.createValidator = function generateJoiMiddlewareInstance(cfg) {
     }
   }
 }
+
+module.exports.createValidatorAsync = function generateJoiMiddlewareInstance(
+  cfg
+) {
+  cfg = cfg || {} // default to an empty config
+  // We'll return this instance of the middleware
+  const instance = {
+    response
+  }
+
+  Object.keys(containers).forEach(type => {
+    // e.g the "body" or "query" from above
+    const container = containers[type]
+
+    instance[type] = function(schema, opts) {
+      opts = opts || {} // like config, default to empty object
+      const computedOpts = { ...container.joi, ...cfg.joi, ...opts.joi }
+
+      return async function expressJoiValidator(req, res, next) {
+        try {
+          const value = await schema.validateAsync(req[type], computedOpts)
+
+          req[container.storageProperty] = req[type]
+          req[type] = value
+
+          next()
+        } catch (error) {
+          let ret = { type, error }
+
+          if (opts.passError || cfg.passError) {
+            ret.type = type
+
+            next(ret)
+          } else {
+            res
+              .status(opts.statusCode || cfg.statusCode || 400)
+              .end(buildErrorString(ret, `request ${type}`))
+          }
+        }
+      }
+    }
+  })
+
+  return instance
+
+  function response(schema, opts = {}) {
+    const type = 'response'
+
+    /**
+     * @param {import("express").Request} req
+     * @param {import("express").Response} res
+     * @param {import("express").NextFunction} next
+     */
+    return (req, res, next) => {
+      const resJson = res.json.bind(res)
+      res.json = validateJson
+      next()
+
+      async function validateJson(json) {
+        try {
+          const value = await schema.validateAsync(json, opts.joi)
+
+          return resJson(value)
+        } catch (error) {
+          let ret = { type, error }
+
+          if (opts.passError || cfg.passError) {
+            ret.type = type
+
+            next(ret)
+          } else {
+            res
+              .status(opts.statusCode || cfg.statusCode || 500)
+              .end(buildErrorString(ret, `${type} json`))
+          }
+        }
+      }
+    }
+  }
+}

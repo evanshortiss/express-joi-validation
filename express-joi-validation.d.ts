@@ -10,6 +10,12 @@ import { ParsedQs } from 'qs'
 export function createValidator(cfg?: ExpressJoiConfig): ExpressJoiInstance
 
 /**
+ * Creates an instance of this module that can be used to generate middleware
+ * @param cfg
+ */
+export function createValidatorAsync(cfg?: ExpressJoiConfig): ExpressJoiInstance
+
+/**
  * These are the named properties on an express.Request that this module can
  * validate, e.g "body" or "query"
  */
