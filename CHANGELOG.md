@@ -1,6 +1,12 @@
 ## CHANGELOG
 Date format is DD/MM/YYYY
 
+## 5.1.1 (23/11/2023)
+* Creates a validator that generates middlewares using Joi validateAsync feature.
+
+## 5.0.1 (22/12/2021)
+* Fix typescript compilation and bump joi and join extract type versions.
+
 ## 5.0.0 (13/10/2020)
 * Drop Node.js 8 support.
 * Update to use Joi v17.x.
