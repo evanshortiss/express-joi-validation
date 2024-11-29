@@ -1,6 +1,6 @@
 {
   "name": "express-joi-validation",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "validate express application inputs and parameters using joi",
   "main": "express-joi-validation.js",
   "scripts": {
