@@ -25,9 +25,12 @@ export enum ContainerTypes {
  * Use this in you express error handler if you've set *passError* to true
  * when calling *createValidator*
  */
-export type ExpressJoiError = Joi.ValidationResult & {
-  type: ContainerTypes
-}
+export type ExpressJoiError<TSchema = any> = Extract<
+  Joi.ValidationResult<TSchema>,
+  { error: Joi.ValidationError }
+> & {
+  type: ContainerTypes;
+};
 
 /**
  * A schema that developers should extend to strongly type the properties
