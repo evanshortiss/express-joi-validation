@@ -1,6 +1,10 @@
 ## CHANGELOG
 Date format is DD/MM/YYYY
 
+## 6.0.0 (13/10/2020)
+* Support Node.js 18+
+* Narrow type for error handlers (#46)
+
 ## 5.0.0 (13/10/2020)
 * Drop Node.js 8 support.
 * Update to use Joi v17.x.
