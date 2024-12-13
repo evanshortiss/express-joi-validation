@@ -38,7 +38,7 @@ route.get(
 
 // curl -X POST -F 'name=express' http://localhost:3030/hello
 route.post('/', formidable(), validator.fields(schema), (req, res) => {
-  const vreq = req as ValidatedRequestWithRawInputsAndFields<
+  const vreq = (req as unknown) as ValidatedRequestWithRawInputsAndFields<
     HelloPostRequestSchema
   >
 
