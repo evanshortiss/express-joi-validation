@@ -367,9 +367,9 @@ import { ContainerTypes } from 'express-joi-validation'
 app.use((err: any|ExpressJoiError, req: express.Request, res: express.Response, next: express.NextFunction) => {
   // ContainerTypes is an enum exported by this module. It contains strings
   // such as "body", "headers", "query"...
-  if (err && err.type in ContainerTypes) {
+  if (err && 'type' in err && err.type in ContainerTypes) {
     const e: ExpressJoiError = err
-    // e.g "you submitted a bad query paramater"
+    // e.g "You submitted a bad query paramater"
     res.status(400).end(`You submitted a bad ${e.type} paramater`)
   } else {
     res.status(500).end('internal server error')

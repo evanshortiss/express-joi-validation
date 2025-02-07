@@ -33,11 +33,11 @@
     "@types/express-formidable": "~1.0.4",
     "@types/node": "^18.19.68",
     "@types/qs": "~6.9.3",
-    "body-parser": "~1.18.3",
+    "body-parser": "1.20.3",
     "chai": "~3.5.0",
     "clear-require": "~2.0.0",
     "coveralls": "~3.0.2",
-    "express": "~4.16.3",
+    "express": "~4.17.3",
     "express-formidable": "~1.0.0",
     "husky": "~1.0.1",
     "joi": "~17.5.0",
@@ -79,12 +79,16 @@
   },
   "lint-staged": {
     "*.js": [
-      "prettier --no-semi --single-quote --write",
+      "prettier --write",
       "git add"
     ],
     "*.ts": [
-      "prettier --no-semi --single-quote --write",
+      "prettier --write",
       "git add"
     ]
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
   }
 }
