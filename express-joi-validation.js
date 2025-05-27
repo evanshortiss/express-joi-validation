@@ -78,7 +78,16 @@ module.exports.createValidator = function generateJoiMiddlewareInstance(cfg) {
 
         if (!ret.error) {
           req[container.storageProperty] = req[type]
-          req[type] = ret.value
+          const descriptor = Object.getOwnPropertyDescriptor(req, type)
+          if (descriptor && descriptor.writable) {
+            req[type] = ret.value
+          } else {
+            Object.defineProperty(req, type, {
+              get() {
+                return ret.value
+              }
+            })
+          }
           next()
         } else if (opts.passError || cfg.passError) {
           ret.type = type

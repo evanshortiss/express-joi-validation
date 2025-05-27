@@ -6,3 +6,4 @@ coverage
 package-lock.json
 example/typescript/*.js
 example/typescript/*.d.ts
+.idea

@@ -1,7 +1,6 @@
 'use strict'
 
 const Joi = require('joi')
-const sinon = require('sinon')
 const supertest = require('supertest')
 const expect = require('chai').expect
 
@@ -262,7 +261,7 @@ describe('express joi', function() {
         statusCode: 422
       })
       return getRequester(middleware)
-        .get(`/response/one`)
+        .get('/response/one')
         .expect(422)
     })
   })
