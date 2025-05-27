@@ -1,7 +1,12 @@
 ## CHANGELOG
 Date format is DD/MM/YYYY
 
-## 6.0.0 (13/10/2020)
+## 6.1.0 (27/05/2025)
+
+* Implement express v5 compatibility (#47)
+* Use Prettier instead of ESLint
+
+## 6.0.0 (13/10/2024)
 * Support Node.js 18+
 * Narrow type for error handlers (#46)
 
