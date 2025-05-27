@@ -59,6 +59,19 @@ function buildErrorString(err, container) {
   return ret
 }
 
+function patchResponseForResponseValidation(res, validationFn) {
+  res._origJson = res.json.bind(res)
+  res.json = validationFn
+}
+
+function restoreResponseAfterResponseValidation(res) {
+  if (res._origJson) {
+    res.json = res._origJson
+  }
+}
+
+module.exports.fixupResponse = restoreResponseAfterResponseValidation
+
 module.exports.createValidator = function generateJoiMiddlewareInstance(cfg) {
   cfg = cfg || {} // default to an empty config
   // We'll return this instance of the middleware
@@ -106,8 +119,7 @@ module.exports.createValidator = function generateJoiMiddlewareInstance(cfg) {
   function response(schema, opts = {}) {
     const type = 'response'
     return (req, res, next) => {
-      const resJson = res.json.bind(res)
-      res.json = validateJson
+      patchResponseForResponseValidation(res, validateJson)
       next()
 
       function validateJson(json) {
@@ -115,8 +127,9 @@ module.exports.createValidator = function generateJoiMiddlewareInstance(cfg) {
         const { error, value } = ret
         if (!error) {
           // return res.json ret to retain express compatibility
-          return resJson(value)
+          return res._origJson(value)
         } else if (opts.passError || cfg.passError) {
+          restoreResponseAfterResponseValidation(res)
           ret.type = type
           next(ret)
         } else {
